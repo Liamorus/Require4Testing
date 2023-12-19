@@ -38,3 +38,4 @@ target
 # Unnecessary Eclipse project files
 .settings 
 .classpath 
+/.metadata/

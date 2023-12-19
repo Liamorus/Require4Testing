@@ -63,6 +63,14 @@
       <version>11.0.0</version>
       <classifier>jakarta</classifier>
     </dependency>
+
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.1</version>
+    </dependency>
+        
+        
     
   </dependencies>
 </project>
