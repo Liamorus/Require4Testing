@@ -13,8 +13,8 @@
     <h:panelGrid columns="2">
       <h:outputLabel value="Username:" for="username"/>
       <h:inputText id="username" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Passwort: " for="passwort"/>
-      <h:inputText id="passwort" value="#{loginController.password}" size="40"/>
+	  <h:outputLabel value="Passwort: " for="password"/>
+	  <h:inputSecret id="password" value="#{loginController.password}" size="40" redisplay="false"/>
     </h:panelGrid>
   </h:form>
 <p:commandLink value="Einloggen" action="#{loginController.login()}" />

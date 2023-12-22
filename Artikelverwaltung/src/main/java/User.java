@@ -6,8 +6,6 @@ public class User implements Serializable
     private String userName;
     private String password;
 
-
-
     public User()
     {
     	
@@ -18,6 +16,18 @@ public class User implements Serializable
         this.setUserName(userName);
         this.setPassword(password);
     }
+    
+    public void getUserArray() {
+		
+	}
+    
+    
+    
+    
+    
+    
+    
+    
 
 	public String getUserName() {
 		return userName;

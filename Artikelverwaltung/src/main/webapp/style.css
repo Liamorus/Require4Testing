@@ -8,3 +8,33 @@ body {
     margin: 0;
     flex-direction: column;
 }
+
+
+#createButton {
+    color: #000000;
+    font-weight: 600;
+    border: 2px solid #4a4a4a; /* Black border, adjust color as needed */
+    border-radius: 10px; /* Adjust for desired roundness */
+    padding: 5px 10px; /* Top/bottom and left/right padding, adjust as needed */
+    display: inline-block; /* To ensure padding and border are applied correctly */
+}
+
+
+#passwort{
+    background-color: #D3D3D3; /* Light grey background */
+}
+
+.passwordInput {
+    width: 100%; /* Full-width input field */
+    padding: 8px 10px; /* Top and bottom padding, and a little bit more on the sides */
+    border: 1px solid #ccc; /* Light grey border */
+    border-radius: 4px; /* Rounded corners */
+    box-sizing: border-box; /* Include padding and border in the width */
+    margin-top: 5px; /* Space above the input field */
+    margin-bottom: 16px; /* Space below the input field */
+}
+
+.passwordInput:focus {
+    border-color: #4A90E2; /* Change border color when focused */
+    outline: none; /* Remove default focus outline */
+}

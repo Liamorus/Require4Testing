@@ -14,7 +14,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class UserController implements Serializable
+public class UserController_new implements Serializable
 {
 	
 	@Inject
@@ -24,6 +24,7 @@ public class UserController implements Serializable
 
 	private String username;
     private String password;
+	
 	
 	
     public User getUser()
