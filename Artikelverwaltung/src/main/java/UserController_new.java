@@ -12,7 +12,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-
+@SuppressWarnings(value = { "all" })
 @Named
 @ViewScoped
 public class UserController_new implements Serializable

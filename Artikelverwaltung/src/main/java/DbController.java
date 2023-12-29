@@ -10,29 +10,12 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class LoginController implements Serializable {
-
-    private String username;
-    private String password;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    // Die Login-Methode
-    public String login() {
+public class DbController implements Serializable 
+{
+	
+	
+// Die Login-Methode	
+public String login() {
         
     	Boolean cond = true;
     	//Connect to DB
@@ -71,22 +54,17 @@ public class LoginController implements Serializable {
 			System.out.println("Fehler bei Sqlverbindung");	
 			e.printStackTrace();
 		}		
-    	
-		
-		
-		
-		
-		
-		
-    	
-    	
-    	if (cond) {
-            return "index.xhtml"; 
-        } else {
-            return "login.xhtml";
-        }
-    }
-    
+		if (cond) {
+		    return "index.xhtml"; 
+		} else {
+		    return "login.xhtml";
+		}
+}
 
-    
+
+
+
+
+
+
 }
