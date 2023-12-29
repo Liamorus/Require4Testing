@@ -62,6 +62,42 @@ public String login() {
 }
 
 
+public void sqlTest()
+{
+	try {
+		Class.forName("org.postgresql.Driver");
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	//Connect to DB
+	String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
+	String username = "postgres";
+	String password = "admin";
+	
+	try {
+		
+		Connection connection = DriverManager.getConnection(jdbcURL,username,password);
+		System.out.println("Verbunden");		
+		String sql = "INSERT INTO artikel (name, description, price) \r\n"
+				+ "VALUES ('Example Artikel', 'This is a description of the example artikel.', 19.99);";
+		Statement statement = connection.createStatement();
+		
+		int rows = statement.executeUpdate(sql);
+		
+		if (rows > 0) {
+			System.out.println("Datensatz eingefügt");
+		}
+		connection.close();
+	} catch (SQLException e) {
+		System.out.println("Fehler bei Sqlverbindung");	
+		e.printStackTrace();
+	}		
+}
+
+
+
+
 
 
 

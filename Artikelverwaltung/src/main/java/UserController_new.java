@@ -12,53 +12,34 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
-@SuppressWarnings(value = { "all" })
+
 @Named
 @ViewScoped
 public class UserController_new implements Serializable
 {
 	private String username;
     private String password;
+    private Integer usertype;
     
-    public String checkUserPasswort()
-    {
-        return "test";
-    }
-	
-	public void sqlTest()
-    {
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String username = "postgres";
-		String password = "admin";
-		
-		try {
-			
-			Connection connection = DriverManager.getConnection(jdbcURL,username,password);
-			System.out.println("Verbunden");		
-			String sql = "INSERT INTO artikel (name, description, price) \r\n"
-					+ "VALUES ('Example Artikel', 'This is a description of the example artikel.', 19.99);";
-			Statement statement = connection.createStatement();
-			
-			int rows = statement.executeUpdate(sql);
-			
-			if (rows > 0) {
-				System.out.println("Datensatz eingefügt");
-			}
-			connection.close();
-		} catch (SQLException e) {
-			System.out.println("Fehler bei Sqlverbindung");	
-			e.printStackTrace();
-		}		
-    }	
-	
-	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // Validator
+    // Überprüft die Inputs
     public void loginValidator(FacesContext context, UIComponent component, Object value) throws ValidatorException
     {
     	String username = (String) value;
@@ -72,6 +53,11 @@ public class UserController_new implements Serializable
     	       
     }
 
+    
+    
+    
+    // GETTER SETTER
+    //
 	public String getUsername() {
 		return username;
 	}
@@ -86,5 +72,21 @@ public class UserController_new implements Serializable
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+
+
+
+	
+	public Integer getUsertype() {
+		return usertype;
+	}
+
+
+
+
+
+	public void setUsertype(Integer usertype) {
+		this.usertype = usertype;
 	}
 }
