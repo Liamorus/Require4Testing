@@ -19,9 +19,12 @@
       <h:inputText id="description" value="#{loginController.password}" size="40"/>
       <h:outputLabel value="Tester:" for="testuser"/>
       <h:inputText id="testuser" value="#{loginController.password}" size="40"/>
+      
+      <p:commandLink id="createButtton" value="Erstellen" action="#{loginController.login()}" />
+      <p:commandLink id="createButtton" value="Erstellen" action="#{loginController.login()}" />
+      
     </h:panelGrid>
   </h:form>
-<p:commandLink id="createButtton" value="Erstellen" action="#{loginController.login()}" />
 
 </h:body>
 </html>

@@ -12,40 +12,17 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
+
 @Named
 @ViewScoped
 public class UserController_new implements Serializable
 {
-	
-	@Inject
-	UserVerwaltung userVerwaltung;
-	
-	private static UserVerwaltung instance = new UserVerwaltung();
-
 	private String username;
     private String password;
-	
-	
-	
-    public User getUser()
-    {
-        return userVerwaltung.getUserMenge().get(0);
-    }
     
     public String checkUserPasswort()
     {
         return "test";
-    }
-
-    
-	public static UserVerwaltung getInstance() {
-		return instance;
-	}
-	
-	public void test()
-    {
-		System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
     }
 	
 	public void sqlTest()

@@ -15,9 +15,12 @@
       <h:inputText id="username" value="#{loginController.username}" size="40" />
 	  <h:outputLabel value="Passwort: " for="password"/>
 	  <h:inputSecret id="password" value="#{loginController.password}" size="40" redisplay="false"/>
+	  
+	  <p:commandLink value="Einloggen" action="#{loginController.login()}" />
+	  <p:commandButton value="Einloggen" action="#{loginController.login()}" ajax="false" />
     </h:panelGrid>
   </h:form>
-<p:commandLink value="Einloggen" action="#{loginController.login()}" />
+
 
 </h:body>
 </html>

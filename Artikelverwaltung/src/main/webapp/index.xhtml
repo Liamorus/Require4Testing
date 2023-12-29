@@ -15,21 +15,24 @@
       <h:inputText id="username" value="#{loginController.username}" size="40" />
 	  <h:outputLabel value="Passwort: " for="passwort"/>
 	  <h:inputSecret id="passwort" value="#{loginController.password}" size="40" redisplay="false"/>
-
+		<p:commandButton value="Home" action="home.xhtml" ajax="false" />
+		<p:commandButton id="createButton" value="DB Connect" action="#{loginController.login()}" ajax="false" />
+		<div/>
+		<p:commandButton value="Login" action="login.xhtml" ajax="false" />
+		<div/>
+		<p:commandButton value="Loginerstellung" action="userCreation.xhtml" ajax="false" />
+		<div/>
+		<p:commandButton value="Anforderungserstellung" action="requirementCreation.xhtml" ajax="false" />
+		<div/>
+		<p:commandButton value="Lauferstellung" action="testrunCreation.xhtml" ajax="false" />
+		<div/>
+		<p:commandButton value="Fallerstellung" action="testcaseCreation.xhtml" ajax="false" />
     </h:panelGrid>
   </h:form>
-	<p:commandLink id="createButton" value="DB Connect" action="#{loginController.login()}" />
-	<div/>
-	<p:commandLink value="Login" action="login.xhtml" />
-	<div/>
-	<p:commandLink value="Loginerstellung" action="userCreation.xhtml" />
-	<div/>
-	<p:commandLink value="Anforderungserstellung" action="requirementCreation.xhtml" />
-	<div/>
-	<p:commandLink value="Lauferstellung" action="testrunCreation.xhtml" />
-	<div/>
-	<p:commandLink value="Fallerstellung" action="testcaseCreation.xhtml" />
-
+  <!-- <p:commandLink id="createButton" value="DB Connect" action="#{loginController.login()}" /> -->
+  
+	
+	
 </h:body>
 </html>
 
