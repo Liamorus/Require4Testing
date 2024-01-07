@@ -12,12 +12,11 @@
   <h:form>
     <h:panelGrid columns="2">
       <h:outputLabel value="Username:" for="username"/>
-      <h:inputText id="username" value="#{loginController.username}" size="40" />
+      <h:inputText id="username" value="#{userController.username}" size="40" />
 	  <h:outputLabel value="Passwort: " for="password"/>
-	  <h:inputSecret id="password" value="#{loginController.password}" size="40" redisplay="false"/>
-	  
-	  <p:commandLink value="Einloggen" action="#{loginController.login()}" />
-	  <p:commandButton value="Einloggen" action="#{loginController.login()}" ajax="false" />
+	  <h:inputSecret id="password" value="#{userController.password}" size="40" redisplay="false"/>
+	  <div/>
+	  <p:commandButton value="Einloggen" action="#{userController.login()}" ajax="false" />
     </h:panelGrid>
   </h:form>
 

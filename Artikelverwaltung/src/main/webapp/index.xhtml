@@ -12,11 +12,11 @@
   <h:form>
     <h:panelGrid columns="2">
       <h:outputLabel value="Username:" for="username"/>
-      <h:inputText id="username" value="#{loginController.username}" size="40" />
+      <h:inputText id="username" value="#{userController.username}" size="40" />
 	  <h:outputLabel value="Passwort: " for="passwort"/>
-	  <h:inputSecret id="passwort" value="#{loginController.password}" size="40" redisplay="false"/>
+	  <h:inputSecret id="passwort" value="#{userController.password}" size="40" redisplay="false"/>
 		<p:commandButton value="Home" action="home.xhtml" ajax="false" />
-		<p:commandButton id="createButton" value="DB Connect" action="#{loginController.login()}" ajax="false" />
+		<p:commandButton id="createButton" value="DB Connect" action="#{userController.login()}" ajax="false" />
 		<div/>
 		<p:commandButton value="Login" action="login.xhtml" ajax="false" />
 		<div/>

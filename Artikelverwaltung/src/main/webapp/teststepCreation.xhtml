@@ -5,18 +5,20 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
   <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Testlauferstellung</title>
+  <title>Testschritterstellung</title>
 </h:head>
 <h:body>
-  <h1>Testlauf erstellen</h1>
+  <h1>Testschritt erstellen</h1>
   <h:form>
     <h:panelGrid columns="2">
       <h:outputLabel value="Ersteller:" for="usernew"/>
       <h:inputText id="usernew" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="LaufNr.:" for="testrunnr"/>
+      <h:outputLabel value="Testlauf:" for="testrunnr"/>
       <h:inputText id="testrunnr" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Anforderung" for="requirementid"/>
-      <h:inputText id="requirementid" value="#{loginController.password}" size="40"/>
+      <h:outputLabel value="Titel:" for="title"/>
+      <h:inputText id="title" value="#{loginController.password}" size="40"/>
+      <h:outputLabel value="Beschreibung:" for="description"/>
+      <h:inputText id="description" value="#{loginController.password}" size="40"/>
       <p:commandButton value="Erstellen" action="#{requirementController.create()}" ajax="false" />
     </h:panelGrid>
   </h:form>

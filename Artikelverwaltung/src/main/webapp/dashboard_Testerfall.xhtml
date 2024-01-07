@@ -5,18 +5,15 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
   <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>LOGIN</title>
+  <title>Dashboard Testerfallersteller</title>
 </h:head>
 <h:body>
-  <h1>Login</h1>
+  <h1>Dashboard Testfallersteller</h1>
   <h:form>
     <h:panelGrid columns="2">
-      <h:outputLabel value="Username:" for="username"/>
-      <h:inputText id="username" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Passwort: " for="passwort"/>
-      <h:inputText id="passwort" value="#{loginController.password}" size="40"/>
+	  <p:commandButton value="Testfall erstellen" action="#{requirementController.createRequirement_redirect()}" ajax="false" />
+      <p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
     </h:panelGrid>
   </h:form>
-<p:commandLink id="createButtton" value="Erstellen" action="#{loginController.login()}" />
 </h:body>
 </html>
