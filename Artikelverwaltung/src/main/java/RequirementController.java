@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
@@ -16,7 +17,7 @@ import jakarta.inject.Named;
 
 @Named
 @ViewScoped
-public class RequirementController implements Serializable 
+public class RequirementController implements Serializable
 {
 	private Integer userNew_Id;
 	private Integer testuser_Id;
@@ -49,8 +50,11 @@ public class RequirementController implements Serializable
 		this.description = description;
 	}
 	
-private List<Requirement> requirements;	
-public RequirementController() {
+private List<Requirement> requirements;
+
+//Postconstruct to Load Datasets
+@PostConstruct
+public void init() {
     requirements = new ArrayList<>();
     loadRequirements();
 }
@@ -61,7 +65,9 @@ public void loadRequirements() {
     String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
     String dbUsername = "postgres";
     String dbPassword = "admin";
-
+    
+    requirements.clear();
+    
     try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
         String sql = "SELECT requirementid, usernew_id, title, description, testuser_id, done FROM requirement";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -84,10 +90,94 @@ public void loadRequirements() {
     }
 }
 
+//set done
+public String setRequirementDone(Requirement req)
+{
+	//Connect to DB
+	String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
+	String dbUsername = "postgres";
+	String dbPassword = "admin";
+	
+	
+	try {
+		
+		Class.forName("org.postgresql.Driver");
+		Connection connection = DriverManager.getConnection(jdbcURL,dbUsername,dbPassword);
+		System.out.println("Verbunden");
+		
+		
+		String sql = "UPDATE requirement\r\n"
+				+ "SET done = ? \n"
+				+ "WHERE requirementid = ?;";
 
 
+		 PreparedStatement preparedStatement = connection.prepareStatement(sql);
+		
+		 preparedStatement.setBoolean(1, true);
+		 preparedStatement.setInt(2, req.getRequirementId());
 
-//Class for List Objects
+		
+		 preparedStatement.executeUpdate();
+		 connection.close();
+		 req.setDone(true);
+		} 
+	catch (Exception e) 
+	{
+		System.out.println("Fehler bei Sqlverbindung");	
+		e.printStackTrace();
+	}
+
+return "dashboard_Re?faces-redirect=true";
+}
+
+
+//Redirect
+public String createRequirement_redirect()
+{
+	return "requirementCreation?faces-redirect=true";
+}
+
+
+//create Requirement
+public String create()
+{
+	//Connect to DB
+			String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
+			String dbUsername = "postgres";
+			String dbPassword = "admin";
+			
+			
+			try {
+				
+				Class.forName("org.postgresql.Driver");
+				Connection connection = DriverManager.getConnection(jdbcURL,dbUsername,dbPassword);
+				System.out.println("Verbunden");
+				
+				
+				String sql = "INSERT INTO requirement (usernew_id, title, description, testuser_id) VALUES (?, ?, ?, ?)";
+
+
+				 PreparedStatement preparedStatement = connection.prepareStatement(sql);
+				
+				 preparedStatement.setInt(1, userNew_Id);
+				 preparedStatement.setString(2, title);
+				 preparedStatement.setString(3, description);
+				 preparedStatement.setInt(4, testuser_Id);
+				
+				 preparedStatement.executeUpdate();
+				 connection.close();
+				} 
+			catch (Exception e) 
+			{
+				System.out.println("Fehler bei Sqlverbindung");	
+				e.printStackTrace();
+			}
+	
+	return "dashboard_Re?faces-redirect=true";
+}   
+
+
+//Nested Class for List Objects
 public class Requirement {
 	
 	private int requirementId;
@@ -96,7 +186,6 @@ public class Requirement {
     private String description;
     private int testUser_Id;
     private boolean done;
-    
     
     // Getter Setter for Requirement Class
 	public Integer getRequirementId() {
@@ -137,48 +226,5 @@ public class Requirement {
 	}
 }
 	
-	//Redirect
-    public String createRequirement_redirect()
-    {
-    	return "requirementCreation?faces-redirect=true";
-    }
 	
-	
-    //create Requirement
-    public String create()
-    {
-    	//Connect to DB
-    			String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-    			String dbUsername = "postgres";
-    			String dbPassword = "admin";
-    			
-    			
-    			try {
-    				
-    				Class.forName("org.postgresql.Driver");
-    				Connection connection = DriverManager.getConnection(jdbcURL,dbUsername,dbPassword);
-    				System.out.println("Verbunden");
-    				
-    				
-    				String sql = "INSERT INTO requirement (usernew_id, title, description, testuser_id) VALUES (?, ?, ?, ?)";
-
-
-    				 PreparedStatement preparedStatement = connection.prepareStatement(sql);
-    				
-    				 preparedStatement.setInt(1, userNew_Id);
-    				 preparedStatement.setString(2, title);
-    				 preparedStatement.setString(3, description);
-    				 preparedStatement.setInt(4, testuser_Id);
-    				
-    				 preparedStatement.executeUpdate();
-    				 connection.close();
-    				} 
-    			catch (Exception e) 
-    			{
-					System.out.println("Fehler bei Sqlverbindung");	
-					e.printStackTrace();
-				}
-    	
-    	return "dashboard_Re?faces-redirect=true";
-    }   
 }

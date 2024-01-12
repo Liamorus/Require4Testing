@@ -5,16 +5,44 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
   <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Dashboard Requierement Engineer</title>
+  <title>Dashboard Requirement Engineer</title>
 </h:head>
 <h:body>
-  <h1>Dashboard Requierement Engineer</h1>
+  <h1>Dashboard Requirement Engineer</h1>
   <h:form>
-    <h:panelGrid columns="2">
-	  <p:commandButton value="Anforderung erstellen" action="#{requirementController.createRequirement_redirect()}" ajax="false" />
-      <p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
+  <h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
+        <h:column>
+            <f:facet name="header">User ID</f:facet>
+            #{req.userNew_Id }
+        </h:column>
+        <h:column>
+            <f:facet name="header">Title</f:facet>
+            #{req.title}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Description</f:facet>
+            #{req.description}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Test User ID</f:facet>
+            #{req.testuser_Id}
+        </h:column>
+        <h:column>
+            <f:facet name="header">Done</f:facet>
+            #{req.done ? "Ja" : "Nein"}
+        </h:column>
+        <h:column>
+            <f:facet name="header"></f:facet>
+            <h:commandButton value="Execute" action="#{requirementController.setRequirementDone(req)}" rendered="#{not req.done}" />
+        </h:column>
+        
+		
+    </h:dataTable>
+    <h:panelGrid columns="3" style="margin-top: 20px;" >
+    	<p:commandButton value="Aktualisieren" action="#{requirementController.loadRequirements()}" ajax="false" />
+	  	<p:commandButton value="Anforderung erstellen" action="#{requirementController.createRequirement_redirect()}" ajax="false" />
+      	<p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
     </h:panelGrid>
-	
   </h:form>
 </h:body>
 </html>
