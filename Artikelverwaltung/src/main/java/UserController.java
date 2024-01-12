@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
@@ -22,7 +24,45 @@ public class UserController implements Serializable
 	private String username;
     private String password;
     private Integer usertype;
+   
+//    private User currentUser ;
     
+    private List<User> users = new ArrayList<>();
+    
+    public List<User> getUsers() {
+    	loadUsers();
+        return users;
+    }
+    
+//    @PostConstruct
+//    public void init() {
+//    	users = new ArrayList<>();
+//    	loadUsers();
+//    }
+    public void loadUsers() {
+        String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
+        String dbUsername = "postgres";
+        String dbPassword = "admin";
+        
+        users.clear();
+        try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
+            String sql = "SELECT userid,username,usertype FROM users";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery(); 
+            while (resultSet.next()) {
+                User user = new User();
+                user.setUsername(resultSet.getString("username"));
+                user.setUsertype(resultSet.getInt("usertype"));
+ 
+                users.add(user);
+                System.out.println("username = " + resultSet.getString("username"));
+    		 	System.out.println("usertype = " + resultSet.getInt("usertype"));
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     
     public String login() 
@@ -61,6 +101,10 @@ public class UserController implements Serializable
 					System.out.println("Name = " + rs.getString("USERNAME"));
 				 	System.out.println("id = " + rs.getInt("USERID"));
 					System.out.println("Login erfolgreich");
+//					currentUser = new User();
+//					currentUser.setUserId(rs.getInt("USERID"));
+//					currentUser.setUsername(rs.getString("USERNAME"));
+//					currentUser.setUsertype(rs.getInt("USERTYPE"));
 					
 					switch (rs.getInt("USERTYPE")) {
 					case 1:
@@ -103,8 +147,6 @@ public class UserController implements Serializable
     
     }
     
- // Validator
-    // Überprüft die Inputs
     public String logout()
     {
     	return "login?faces-redirect=true";
@@ -154,11 +196,18 @@ public class UserController implements Serializable
 	// Embedded User Class
 	public class User
 	{
+		private Integer userId;
 		private String username;
 	    private String password;
 	    private Integer usertype;
 	    
 	    
+		public Integer getUserId() {
+			return userId;
+		}
+		public void setUserId(Integer userId) {
+			this.userId = userId;
+		}
 		public String getUsername() {
 			return username;
 		}
