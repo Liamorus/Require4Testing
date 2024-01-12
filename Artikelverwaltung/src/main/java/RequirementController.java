@@ -69,7 +69,7 @@ public void loadRequirements() {
     requirements.clear();
     
     try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-        String sql = "SELECT requirementid, usernew_id, title, description, testuser_id, done FROM requirement";
+        String sql = "SELECT requirementid, usernew_id, title, description, testuser_id, done FROM requirement order by requirementid desc";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery(); 
         while (resultSet.next()) {
@@ -81,8 +81,8 @@ public void loadRequirements() {
             req.setTestuser_Id(resultSet.getInt("testuser_id"));
             req.setDone(resultSet.getBoolean("done"));
             requirements.add(req);
-            System.out.println("Title = " + resultSet.getString("title"));
-		 	System.out.println("Description = " + resultSet.getString("description"));
+//          System.out.println("Title = " + resultSet.getString("title"));
+//		 	System.out.println("Description = " + resultSet.getString("description"));
         }
         connection.close();
     } catch (Exception e) {
