@@ -69,13 +69,12 @@ public void loadRequirements() {
     requirements.clear();
     
     try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-        String sql = "SELECT requirementid, usernew_id, title, description, testuser_id, done FROM requirement order by requirementid desc";
+        String sql = "SELECT requirementid,  title, description, testuser_id, done FROM requirement order by requirementid desc";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery(); 
         while (resultSet.next()) {
             Requirement req = new Requirement();
             req.setRequirementId(resultSet.getInt("requirementid"));
-            req.setUserNew_Id(resultSet.getInt("usernew_id"));
             req.setTitle(resultSet.getString("title"));
             req.setDescription(resultSet.getString("description"));
             req.setTestuser_Id(resultSet.getInt("testuser_id"));
@@ -154,15 +153,14 @@ public String create()
 				System.out.println("Verbunden");
 				
 				
-				String sql = "INSERT INTO requirement (usernew_id, title, description, testuser_id) VALUES (?, ?, ?, ?)";
+				String sql = "INSERT INTO requirement (title, description, testuser_id) VALUES (?, ?, ?)";
 
 
 				 PreparedStatement preparedStatement = connection.prepareStatement(sql);
 				
-				 preparedStatement.setInt(1, userNew_Id);
-				 preparedStatement.setString(2, title);
-				 preparedStatement.setString(3, description);
-				 preparedStatement.setInt(4, testuser_Id);
+				 preparedStatement.setString(1, title);
+				 preparedStatement.setString(2, description);
+				 preparedStatement.setInt(3, testuser_Id);
 				
 				 preparedStatement.executeUpdate();
 				 connection.close();

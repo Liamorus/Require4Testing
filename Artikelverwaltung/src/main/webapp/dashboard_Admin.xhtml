@@ -13,16 +13,12 @@
   <h:panelGrid columns="2" style="margin-top: 20px;" >
    	<h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
         <h:column>
-            <f:facet name="header">User ID</f:facet>
-            #{req.userNew_Id }
-        </h:column>
-        <h:column>
             <f:facet name="header">Title</f:facet>
             #{req.title}
         </h:column>
         <h:column>
             <f:facet name="header">Description</f:facet>
-            #{req.description}
+            #{req.description}s
         </h:column>
         <h:column>
             <f:facet name="header">Test User ID</f:facet>
@@ -62,60 +58,44 @@
        
        
        
-	<h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
-        <h:column>
-            <f:facet name="header">User ID</f:facet>
-            #{req.userNew_Id }
-        </h:column>
-        <h:column>
-            <f:facet name="header">Title</f:facet>
-            #{req.title}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Description</f:facet>
-            #{req.description}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Test User ID</f:facet>
-            #{req.testuser_Id}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Done</f:facet>
-            #{req.done ? "Ja" : "Nein"}
-        </h:column>
-        <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Execute" action="#{requirementController.setRequirementDone(req)}" rendered="#{not req.done}" />
-        </h:column>
+	<h:dataTable value="#{testStepController.testSteps}" var="stepData" border="1">
+    <h:column>
+        <f:facet name="header">Test Case ID</f:facet>
+        #{stepData.testcase_Id}
+    </h:column>
+    <h:column>
+        <f:facet name="header">Title</f:facet>
+        #{stepData.title}
+    </h:column>
+    </h:dataTable>
+    
+    
+	<h:dataTable value="#{testrunController.testruns}" var="testrun" border="1">
+	    <h:column>
+	        <f:facet name="header">Run Number</f:facet>
+	        #{testrun.runNr}
+	    </h:column>
+	    <h:column>
+	        <f:facet name="header">Requirement ID</f:facet>
+	        #{testrun.requirement_Id}
+	    </h:column>
 	</h:dataTable>
-	<h:dataTable value="#{testController.getTests()}" var="testData" border="1">       
-        <h:column>
-            <f:facet name="header">Title</f:facet>
-            #{testData.testrun_Id}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Description</f:facet>
-            #{testData.testCase_Id}
-        </h:column>
-        <h:column>
-            <f:facet name="header">User ID</f:facet>
-            #{testData.user_Id }
-        </h:column>
-        <h:column>
-            <f:facet name="header">Done</f:facet>
-            #{testData.done ? "Ja" : "Nein"}
-        </h:column>
-        <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Execute" action="#{requirementController.setRequirementDone(req)}" rendered="#{not req.done}" />
-        </h:column>
-       </h:dataTable>
 	
-	
-	
-	
-	  
-</h:panelGrid>
+	<h:dataTable value="#{testcaseController.testcases}" var="testcase" border="1">
+    <h:column>
+        <f:facet name="header">Test Run ID</f:facet>
+        #{testcase.testrun_Id}
+    </h:column>
+    <h:column>
+        <f:facet name="header">Status</f:facet>
+        #{testcase.status}
+    </h:column>
+    <h:column>
+        <f:facet name="header">Description</f:facet>
+        #{testcase.description}
+    </h:column>
+</h:dataTable>
+	</h:panelGrid>
   
         
 	
