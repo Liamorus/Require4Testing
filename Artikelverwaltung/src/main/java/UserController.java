@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
@@ -18,14 +19,14 @@ import jakarta.inject.Named;
 
 
 @Named
-@ViewScoped
+@SessionScoped
 public class UserController implements Serializable
 {
 	private String username;
     private String password;
     private Integer usertype;
    
-//    private User currentUser ;
+    private User currentUser = new User();
     
     private List<User> users = new ArrayList<>();
     
@@ -57,6 +58,8 @@ public class UserController implements Serializable
                 users.add(user);
                 System.out.println("username = " + resultSet.getString("username"));
     		 	System.out.println("usertype = " + resultSet.getInt("usertype"));
+    		 	System.out.println("username1 = " + currentUser.getUsername());
+    		 	System.out.println("usertype1 = " + currentUser.getUsertype());
             }
             connection.close();
         } catch (Exception e) {
@@ -101,12 +104,14 @@ public class UserController implements Serializable
 					System.out.println("Name = " + rs.getString("USERNAME"));
 				 	System.out.println("id = " + rs.getInt("USERID"));
 					System.out.println("Login erfolgreich");
-//					currentUser = new User();
-//					currentUser.setUserId(rs.getInt("USERID"));
-//					currentUser.setUsername(rs.getString("USERNAME"));
-//					currentUser.setUsertype(rs.getInt("USERTYPE"));
+					currentUser.setUserId(rs.getInt("USERID"));
+					currentUser.setUsername(rs.getString("USERNAME"));
+					currentUser.setUsertype(rs.getInt("USERTYPE"));
 					
 					switch (rs.getInt("USERTYPE")) {
+					case 0:
+						destination = "dashboard_Admin";
+						break;
 					case 1:
 						destination = "dashboard_Re";
 						break;

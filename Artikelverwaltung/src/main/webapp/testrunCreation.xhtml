@@ -11,13 +11,15 @@
   <h1>Testlauf erstellen</h1>
   <h:form>
     <h:panelGrid columns="2">
-      <h:outputLabel value="Ersteller:" for="usernew"/>
-      <h:inputText id="usernew" value="#{loginController.username}" size="40" />
       <h:outputLabel value="LaufNr.:" for="testrunnr"/>
-      <h:inputText id="testrunnr" value="#{loginController.username}" size="40" />
+      <h:inputText id="testrunnr" value="#{testrunController.runNr}" size="40" />
       <h:outputLabel value="Anforderung" for="requirementid"/>
-      <h:inputText id="requirementid" value="#{loginController.password}" size="40"/>
-      <p:commandButton value="Erstellen" action="#{requirementController.create()}" ajax="false" />
+      <h:selectOneMenu id="requirementid" value="#{testrunController.requirement_Id}">
+	    	<f:selectItem itemLabel="Select Requirement" itemValue="" noSelectionOption="false" />
+	    	<f:selectItems value="#{requirementController.getRequirements()}" var="requirement" itemLabel="#{requirement.title}" itemValue="#{requirement.requirementId}" />
+		</h:selectOneMenu>
+      <p:commandButton value="Erstellen" action="#{testrunController.create()}" ajax="false" />
+      
     </h:panelGrid>
   </h:form>
 

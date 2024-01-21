@@ -11,22 +11,20 @@
   <h1>Anforderung erstellen</h1>
   <h:form>
     <h:panelGrid columns="2">
-      
-      	<h:outputLabel value="Ersteller:" for="usernew"/>
-		<h:selectOneMenu id="usernew" value="#{requirementController.userNew_Id}">
+	    <h:outputLabel value="Ersteller:" for="usernew"/>
+	    <h:inputText id="usernew" value="#{requirementController.userNew_Id}" size="40" />
+	    <h:outputLabel value="Titel:" for="title"/>
+	    <h:inputText id="title" value="#{requirementController.title}" size="40"/>
+	    <h:outputLabel value="Beschreibung:" for="description"/>
+	    <h:inputText id="description" value="#{requirementController.description}" size="40"/>
+	    <h:outputLabel value="Tester:" for="testuser"/>
+		<h:selectOneMenu id="testuser" value="#{requirementController.testuser_Id}">
 	    	<f:selectItem itemLabel="Select User" itemValue="" noSelectionOption="false" />
-	    	<f:selectItems value="#{userController.getUsers()}" var="user" 
-                   itemLabel="#{user.username}" itemValue="#{user.userId}" />
+	    	<f:selectItems value="#{userController.getUsers()}" var="user" itemLabel="#{user.username}" itemValue="#{user.userId}" />
 		</h:selectOneMenu>
-
-      
-      
-      <h:outputLabel value="Titel:" for="title"/>
-      <h:inputText id="title" value="#{requirementController.title}" size="40"/>
-      <h:outputLabel value="Beschreibung:" for="description"/>
-      <h:inputText id="description" value="#{requirementController.description}" size="40"/>
-      <h:outputLabel value="Tester:" for="testuser"/>
-      <h:inputText id="testuser" value="#{requirementController.testuser_Id}" size="40"/>
+            
+          
+    
       
       <div/>
 	  <p:commandButton value="Erstellen" action="#{requirementController.create()}" ajax="false" />
