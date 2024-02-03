@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+  <title>Testcase Teststeps View</title>
+</h:head>
+<h:body>
+  <h1>Testcase Teststeps View</h1>
+  <h:form>
+  <h:outputText value="Tests" style="font-weight: bold;"/>
+	<h:outputText value="Testschritte" style="font-weight: bold;"/>  
+	<h:dataTable value="#{teststepController.filteredTestSteps}" var="stepData" border="1">
+    <h:column>
+        <f:facet name="header">Test Case ID</f:facet>
+        #{stepData.testcase_Id}
+    </h:column>
+    <h:column>
+        <f:facet name="header">Title</f:facet>
+        #{stepData.title}
+    </h:column>
+    </h:dataTable>
+    <p:commandButton value="zurück" action="dashboard_Tester?faces-redirect=true" ajax="false" />
+  </h:form>
+</h:body>
+</html>

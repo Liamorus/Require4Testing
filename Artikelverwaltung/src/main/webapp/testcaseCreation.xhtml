@@ -11,17 +11,28 @@
   <h1>Testfall erstellen</h1>
   <h:form>
     <h:panelGrid columns="2">
-      <h:outputLabel value="Ersteller:" for="usernew"/>
-      <h:inputText id="usernew" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Testlauf:" for="testrunnr"/>
-      <h:inputText id="testrunnr" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Titel:" for="title"/>
-      <h:inputText id="title" value="#{loginController.password}" size="40"/>
-      <h:outputLabel value="Beschreibung:" for="description"/>
-      <h:inputText id="description" value="#{loginController.password}" size="40"/>
+	
+    
+      <h:outputLabel value="Anforderung" for="title"/>
+      <h:selectOneMenu id="requirement" value="#{testcaseController.requirement_Id}">
+	    	<f:selectItem itemLabel="Anforderung auswählen" itemValue="" noSelectionOption="false" />
+	    	<f:selectItems value="#{requirementController.getRequirements()}" var="requirement" itemLabel="#{requirement.title}" itemValue="#{requirement.requirementId}" />
+	    	<f:ajax event="valueChange" listener="#{testcaseController.checkCreateCondition()}" render="createButton" />
+		</h:selectOneMenu>
+		
+		
+		<h:outputLabel value="Beschreibung:" for="description"/>
+	    <h:inputText id="description" value="#{testcaseController.description}" size="40">
+	    	<f:ajax event="keyup" render="createButton" listener="#{testcaseController.checkCreateCondition()}" />
+        </h:inputText>
+    </h:panelGrid>
+
+    <h:panelGrid columns="2">
+	    <p:commandButton id="createButton" value="Erstellen" action="#{testcaseController.create()}" ajax="false" disabled="#{testcaseController.checkCreateCondition()}"/>
+	    <p:commandButton value="Abbrechen" action="dashboard_Testfall?faces-redirect=true" ajax="false" />
     </h:panelGrid>
   </h:form>
-<p:commandButton value="Erstellen" action="#{requirementController.create()}" ajax="false" />
+
 
 </h:body>
 </html>

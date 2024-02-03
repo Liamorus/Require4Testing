@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
@@ -28,18 +29,52 @@ public class UserController implements Serializable
    
     private User currentUser = new User();
     
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
+    
+    private List<User> tester;
+    
+    @PostConstruct
+    public void init() {
+    	users = new ArrayList<>();
+    	tester = new ArrayList<>();
+    }
+    
+    public List<User> getTester() {
+    		loadTester();
+        return tester;
+    }
     
     public List<User> getUsers() {
     	loadUsers();
         return users;
     }
     
-//    @PostConstruct
-//    public void init() {
-//    	users = new ArrayList<>();
-//    	loadUsers();
-//    }
+    public void loadTester() {
+        String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
+        String dbUsername = "postgres";
+        String dbPassword = "admin";
+        
+        tester.clear();
+        try {
+        	Class.forName("org.postgresql.Driver");
+        	Connection connection = DriverManager.getConnection(jdbcURL,dbUsername,dbPassword);
+            String sql = "SELECT userid,username,usertype FROM users where usertype = 4";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery(); 
+            while (resultSet.next()) {
+                User user = new User();
+                user.setUserId(resultSet.getInt("userid"));
+                user.setUsername(resultSet.getString("username"));
+                user.setUsertype(resultSet.getInt("usertype"));
+ 
+                tester.add(user);
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void loadUsers() {
         String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
         String dbUsername = "postgres";
@@ -52,14 +87,11 @@ public class UserController implements Serializable
             ResultSet resultSet = preparedStatement.executeQuery(); 
             while (resultSet.next()) {
                 User user = new User();
+                user.setUserId(resultSet.getInt("userid"));
                 user.setUsername(resultSet.getString("username"));
                 user.setUsertype(resultSet.getInt("usertype"));
  
                 users.add(user);
-                System.out.println("username = " + resultSet.getString("username"));
-    		 	System.out.println("usertype = " + resultSet.getInt("usertype"));
-    		 	System.out.println("username1 = " + currentUser.getUsername());
-    		 	System.out.println("usertype1 = " + currentUser.getUsertype());
             }
             connection.close();
         } catch (Exception e) {
@@ -119,6 +151,9 @@ public class UserController implements Serializable
 						destination = "dashboard_TestManager";
 						break;
 					case 3:
+						destination = "dashboard_Testfall";
+						break;
+					case 4:
 						destination = "dashboard_Tester";
 						break;
 					default:
@@ -156,7 +191,7 @@ public class UserController implements Serializable
     {
     	return "login?faces-redirect=true";
     }
-    
+
     
     // Validator
     // Überprüft die Inputs
@@ -197,6 +232,10 @@ public class UserController implements Serializable
 	public void setUsertype(Integer usertype) {
 		this.usertype = usertype;
 	}
+	
+	public User getCurrentUser() {
+        return this.currentUser;
+    }
 	
 	// Embedded User Class
 	public class User

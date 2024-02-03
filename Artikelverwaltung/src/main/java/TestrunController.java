@@ -7,26 +7,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
 @Named
-@ViewScoped
+@SessionScoped
 public class TestrunController implements Serializable {
     private Integer testrunId;
     private Integer runNr;
-    private Integer userNew_Id;
+    private Integer user_Id;
     private Integer requirement_Id;
+    private String requirementTitle;
+    
 
     private List<Testrun> testruns;
-
-    public TestrunController() {
-        testruns = new ArrayList<>();
-    }
+    
+    private Testrun currentTestrun = new Testrun();
 
     @PostConstruct
     public void init() {
+    	testruns = new ArrayList<>();
         loadTestruns();
+        
     }
 
     public void loadTestruns() {
@@ -36,8 +39,10 @@ public class TestrunController implements Serializable {
 
         testruns.clear();
 
-        try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-            String sql = "SELECT testrunid, runnr, requirement_id FROM testrun";
+        try {
+        	Class.forName("org.postgresql.Driver");
+        	Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
+            String sql = "SELECT tr.testrunid, tr.runnr, tr.requirement_id , r.title FROM testrun tr left join requirement r on r.requirementid = tr.requirement_id order by tr.requirement_id asc, tr.runnr asc";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -45,11 +50,18 @@ public class TestrunController implements Serializable {
                 testrunData.setTestrunId(resultSet.getInt("testrunid"));
                 testrunData.setRunNr(resultSet.getInt("runnr"));
                 testrunData.setRequirement_Id(resultSet.getInt("requirement_id"));
+                testrunData.setRequirementTitle(resultSet.getString("title"));
                 testruns.add(testrunData);
+                connection.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public boolean checkCreateCondition() {
+    	//If one of the following cases appear create is diasbled
+        return (requirement_Id == null || user_Id == null );
     }
 
     public String create() {
@@ -62,11 +74,19 @@ public class TestrunController implements Serializable {
             Class.forName("org.postgresql.Driver");
             Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
             System.out.println("Verbunden");
+            
+            String sqlRunNr = "SELECT COALESCE(MAX(runnr), 0) + 1 as runnr FROM public.testrun WHERE requirement_id = ?";
+            PreparedStatement preparedStatementRunNr = connection.prepareStatement(sqlRunNr);
+            preparedStatementRunNr.setInt(1, requirement_Id);
+            ResultSet resultSetRunNr = preparedStatementRunNr.executeQuery();
+            resultSetRunNr.next();
+            Integer newRunNr = resultSetRunNr.getInt("runnr");
 
-            String sql = "INSERT INTO testrun (runnr, requirement_id) VALUES (?, ?)";
+            String sql = "INSERT INTO testrun (runnr, requirement_id, user_id) VALUES (?, ?,?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, runNr);
+            preparedStatement.setInt(1, newRunNr);
             preparedStatement.setInt(2, requirement_Id);
+            preparedStatement.setInt(3, user_Id);
 
             preparedStatement.executeUpdate();
             connection.close();
@@ -78,6 +98,18 @@ public class TestrunController implements Serializable {
         return "dashboard_TestManager?faces-redirect=true";
     }
 
+    public String openCurrentTestrun(Testrun testrunDS) 
+	{
+    	currentTestrun.setTestrunId(testrunDS.getTestrunId());
+		currentTestrun.setRunNr(testrunDS.getRunNr());
+		currentTestrun.setRequirement_Id(testrunDS.getRequirement_Id()); 
+		
+		return "testrunOpen?faces-redirect=true";
+	}
+    
+    
+    
+    
     // Getters and Setters
     public Integer getTestrunId() {
         return testrunId;
@@ -95,13 +127,7 @@ public class TestrunController implements Serializable {
         this.runNr = run;
     }
 
-    public Integer getUserNew_Id() {
-        return userNew_Id;
-    }
-
-    public void setUserNew_Id(Integer userNew_Id) {
-        this.userNew_Id = userNew_Id;
-    }
+   
 
     public Integer getRequirement_Id() {
         return requirement_Id;
@@ -111,16 +137,38 @@ public class TestrunController implements Serializable {
         this.requirement_Id = requirement_Id;
     }
 
-    public List<Testrun> getTestruns() {
+    public Integer getUser_Id() {
+		return user_Id;
+	}
+
+	public void setUser_Id(Integer user_Id) {
+		this.user_Id = user_Id;
+	}
+    
+    public String getRequirementTitle() {
+		return requirementTitle;
+	}
+
+	public void setRequirementTitle(String requirementTitle) {
+		this.requirementTitle = requirementTitle;
+	}
+
+	public List<Testrun> getTestruns() {
+    	loadTestruns();
         return testruns;
+    }
+    
+    public Testrun getCurrentTestrun() {
+        return currentTestrun;
     }
 
     // Nested Testrun class
     public class Testrun {
         private Integer testrunId;
         private Integer runNr;
-        private Integer userNew_Id;
+        private Integer user_Id;
         private Integer requirement_Id;
+        private String requirementTitle;
 
         // Getters and Setters for Testrun properties
         public Integer getTestrunId() {
@@ -139,14 +187,6 @@ public class TestrunController implements Serializable {
             this.runNr = runNr;
         }
 
-        public Integer getUserNew_Id() {
-            return userNew_Id;
-        }
-
-        public void setUserNew_Id(Integer userNew_Id) {
-            this.userNew_Id = userNew_Id;
-        }
-
         public Integer getRequirement_Id() {
             return requirement_Id;
         }
@@ -154,5 +194,21 @@ public class TestrunController implements Serializable {
         public void setRequirement_Id(Integer requirement_Id) {
             this.requirement_Id = requirement_Id;
         }
+
+		public Integer getUser_Id() {
+			return user_Id;
+		}
+
+		public void setUser_Id(Integer user_Id) {
+			this.user_Id = user_Id;
+		}
+
+		public String getRequirementTitle() {
+			return requirementTitle;
+		}
+
+		public void setRequirementTitle(String requirementTitle) {
+			this.requirementTitle = requirementTitle;
+		}
     }
 }

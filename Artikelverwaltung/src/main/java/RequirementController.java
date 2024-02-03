@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
 
@@ -16,26 +17,19 @@ import jakarta.inject.Named;
 
 
 @Named
-@ViewScoped
+@SessionScoped
 public class RequirementController implements Serializable
 {
-	private Integer userNew_Id;
-	private Integer testuser_Id;
+	private Integer requirementId;
 	private String title;
 	private String description;
 	
 	// Getter Setter Controller for Insert
-	public Integer getUserNew_Id() {
-		return userNew_Id;
+	public int getRequirementId() {
+		return requirementId;
 	}
-	public void setUserNew_Id(Integer userNew_Id) {
-		this.userNew_Id = userNew_Id;
-	}
-	public Integer getTestuser_Id() {
-		return testuser_Id;
-	}
-	public void setTestuser_Id(Integer testuser_Id) {
-		this.testuser_Id = testuser_Id;
+	public void setRequirementId(Integer requirementId) {
+		this.requirementId = requirementId;
 	}
 	public String getTitle() {
 		return title;
@@ -68,7 +62,9 @@ public void loadRequirements() {
     
     requirements.clear();
     
-    try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
+    try {
+    	Class.forName("org.postgresql.Driver");
+    	Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
         String sql = "SELECT requirementid,  title, description, testuser_id, done FROM requirement order by requirementid desc";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         ResultSet resultSet = preparedStatement.executeQuery(); 
@@ -77,11 +73,8 @@ public void loadRequirements() {
             req.setRequirementId(resultSet.getInt("requirementid"));
             req.setTitle(resultSet.getString("title"));
             req.setDescription(resultSet.getString("description"));
-            req.setTestuser_Id(resultSet.getInt("testuser_id"));
-            req.setDone(resultSet.getBoolean("done"));
+   
             requirements.add(req);
-//          System.out.println("Title = " + resultSet.getString("title"));
-//		 	System.out.println("Description = " + resultSet.getString("description"));
         }
         connection.close();
     } catch (Exception e) {
@@ -89,8 +82,20 @@ public void loadRequirements() {
     }
 }
 
-//set done
-public String setRequirementDone(Requirement req)
+public boolean checkCreateCondition() {
+	//If one of the following cases appear create is diasbled
+    return (title == null || title.trim().isEmpty() || description == null || description.trim().isEmpty());
+}
+
+//Redirect
+public String createRequirement_redirect()
+{
+	return "requirementCreation?faces-redirect=true";
+}
+
+
+//create Requirement
+public String create()
 {
 	//Connect to DB
 	String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
@@ -105,72 +110,23 @@ public String setRequirementDone(Requirement req)
 		System.out.println("Verbunden");
 		
 		
-		String sql = "UPDATE requirement\r\n"
-				+ "SET done = ? \n"
-				+ "WHERE requirementid = ?;";
+		String sql = "INSERT INTO requirement (title, description) VALUES (?, ?)";
 
 
 		 PreparedStatement preparedStatement = connection.prepareStatement(sql);
 		
-		 preparedStatement.setBoolean(1, true);
-		 preparedStatement.setInt(2, req.getRequirementId());
-
+		 preparedStatement.setString(1, title);
+		 preparedStatement.setString(2, description);
 		
 		 preparedStatement.executeUpdate();
 		 connection.close();
-		 req.setDone(true);
 		} 
 	catch (Exception e) 
 	{
 		System.out.println("Fehler bei Sqlverbindung");	
 		e.printStackTrace();
 	}
-
-return "dashboard_Re?faces-redirect=true";
-}
-
-
-//Redirect
-public String createRequirement_redirect()
-{
-	return "requirementCreation?faces-redirect=true";
-}
-
-
-//create Requirement
-public String create()
-{
-	//Connect to DB
-			String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-			String dbUsername = "postgres";
-			String dbPassword = "admin";
-			
-			
-			try {
-				
-				Class.forName("org.postgresql.Driver");
-				Connection connection = DriverManager.getConnection(jdbcURL,dbUsername,dbPassword);
-				System.out.println("Verbunden");
-				
-				
-				String sql = "INSERT INTO requirement (title, description, testuser_id) VALUES (?, ?, ?)";
-
-
-				 PreparedStatement preparedStatement = connection.prepareStatement(sql);
-				
-				 preparedStatement.setString(1, title);
-				 preparedStatement.setString(2, description);
-				 preparedStatement.setInt(3, testuser_Id);
-				
-				 preparedStatement.executeUpdate();
-				 connection.close();
-				} 
-			catch (Exception e) 
-			{
-				System.out.println("Fehler bei Sqlverbindung");	
-				e.printStackTrace();
-			}
-	
+	loadRequirements();
 	return "dashboard_Re?faces-redirect=true";
 }   
 
@@ -178,12 +134,9 @@ public String create()
 //Nested Class for List Objects
 public class Requirement {
 	
-	private int requirementId;
-    private int userNew_Id;
+	private int requirementId; 
     private String title;
     private String description;
-    private int testUser_Id;
-    private boolean done;
     
     // Getter Setter for Requirement Class
 	public Integer getRequirementId() {
@@ -192,18 +145,7 @@ public class Requirement {
 	public void setRequirementId(Integer requirementId) {
 		this.requirementId = requirementId;
 	}
-	public Integer getUserNew_Id() {
-		return userNew_Id;
-	}
-	public void setUserNew_Id(Integer userNew_Id) {
-		this.userNew_Id = userNew_Id;
-	}
-	public Integer getTestuser_Id() {
-		return testUser_Id;
-	}
-	public void setTestuser_Id(Integer testuser_Id) {
-		this.testUser_Id = testuser_Id;
-	}
+	
 	public String getTitle() {
 		return title;
 	}
@@ -215,12 +157,6 @@ public class Requirement {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	public boolean isDone() {
-		return done;
-	}
-	public void setDone(boolean done) {
-		this.done = done;
 	}
 }
 	

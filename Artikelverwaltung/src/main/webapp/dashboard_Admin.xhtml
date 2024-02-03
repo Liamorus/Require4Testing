@@ -11,6 +11,8 @@
   <h1>Dashboard Admin</h1>
   <h:form>
   <h:panelGrid columns="2" style="margin-top: 20px;" >
+  
+  	<h:outputText value="Anforderungen" style="font-weight: bold;"/>
    	<h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
         <h:column>
             <f:facet name="header">Title</f:facet>
@@ -33,6 +35,8 @@
             <h:commandButton value="Execute" action="#{requirementController.setRequirementDone(req)}" rendered="#{not req.done}" />
         </h:column>
 	</h:dataTable>
+	
+	<h:outputText value="Tests" style="font-weight: bold;"/>
 	<h:dataTable value="#{testController.getTests()}" var="testData" border="1">       
         <h:column>
             <f:facet name="header">Title</f:facet>
@@ -57,8 +61,8 @@
        </h:dataTable>
        
        
-       
-	<h:dataTable value="#{testStepController.testSteps}" var="stepData" border="1">
+    <h:outputText value="Testschritte" style="font-weight: bold;"/>  
+	<h:dataTable value="#{teststepController.testSteps}" var="stepData" border="1">
     <h:column>
         <f:facet name="header">Test Case ID</f:facet>
         #{stepData.testcase_Id}
@@ -69,7 +73,7 @@
     </h:column>
     </h:dataTable>
     
-    
+    <h:outputText value="Testläufe" style="font-weight: bold;"/>
 	<h:dataTable value="#{testrunController.testruns}" var="testrun" border="1">
 	    <h:column>
 	        <f:facet name="header">Run Number</f:facet>
@@ -81,6 +85,7 @@
 	    </h:column>
 	</h:dataTable>
 	
+	<h:outputText value="Testfälle" style="font-weight: bold;"/>
 	<h:dataTable value="#{testcaseController.testcases}" var="testcase" border="1">
     <h:column>
         <f:facet name="header">Test Run ID</f:facet>

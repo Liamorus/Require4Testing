@@ -12,10 +12,6 @@
   <h:form>
   <h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
         <h:column>
-            <f:facet name="header">User ID</f:facet>
-            #{req.userNew_Id }
-        </h:column>
-        <h:column>
             <f:facet name="header">Title</f:facet>
             #{req.title}
         </h:column>
@@ -23,23 +19,8 @@
             <f:facet name="header">Description</f:facet>
             #{req.description}
         </h:column>
-        <h:column>
-            <f:facet name="header">Test User ID</f:facet>
-            #{req.testuser_Id}
-        </h:column>
-        <h:column>
-            <f:facet name="header">Done</f:facet>
-            #{req.done ? "Ja" : "Nein"}
-        </h:column>
-        <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Execute" action="#{requirementController.setRequirementDone(req)}" rendered="#{not req.done}" />
-        </h:column>
-        
-		
-    </h:dataTable>
+	</h:dataTable>
     <h:panelGrid columns="3" style="margin-top: 20px;" >
-    	<p:commandButton value="Aktualisieren" action="#{requirementController.loadRequirements()}" ajax="false" />
 	  	<p:commandButton value="Anforderung erstellen" action="#{requirementController.createRequirement_redirect()}" ajax="false" />
       	<p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
     </h:panelGrid>

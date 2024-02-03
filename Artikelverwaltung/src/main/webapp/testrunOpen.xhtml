@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
+  <title>Test View</title>
+</h:head>
+<h:body>
+  <h1>Testlauf view geöffnet</h1>
+  <h:form>
+  <h:panelGrid columns="2" style="margin-top: 20px;">
+  
+    <h:panelGroup>
+			<h:outputText value="Testfälle" style="font-weight: bold;"/>
+		<h:dataTable value="#{testcaseController.filteredTestcases}" var="filteredTestcase" border="1">
+	    <h:column>
+	        <f:facet name="header">Test Case ID</f:facet>
+	        #{filteredTestcase.testcaseId}
+	    </h:column>
+	    <h:column>
+	        <f:facet name="header">Status</f:facet>
+        #{testcaseController.getStatusText(filteredTestcase)}
+	    </h:column>
+	    <h:column>
+	        <f:facet name="header">Description</f:facet>
+	        #{filteredTestcase.description}
+	    </h:column>
+	    <h:column>
+	        <f:facet name="header">testrunid</f:facet>
+	        #{filteredTestcase.testrun_Id}
+	    </h:column>
+			</h:dataTable>
+    </h:panelGroup>
+    <h:panelGroup>
+   		 <h:selectOneMenu id="testcase" value="#{testcaseController.testcaseId}">
+		    <f:selectItem itemLabel="Select Testcase" itemValue="" noSelectionOption="true" />
+		    <f:selectItems value="#{testcaseController.availableTestcases}" var="testcase" itemLabel="#{testcase.description}" itemValue="#{testcase.testcaseId}" />
+		    <f:ajax event="valueChange" listener="#{testcaseController.checkConnectCondition()}" render="connectButton" />
+		</h:selectOneMenu>
+		<div/>
+		<p:commandButton id="connectButton" value="Testfall Verknüpfen" action="#{testcaseController.connectCasewithRun()}" ajax="false" disabled="#{!testcaseController.checkConnectCondition()}" />
+		</h:panelGroup>
+
+    
+    
+    </h:panelGrid>
+    <p:commandButton value="zurück" action="dashboard_TestManager?faces-redirect=true" ajax="false" />
+  </h:form>
+</h:body>
+</html>
+
+    
