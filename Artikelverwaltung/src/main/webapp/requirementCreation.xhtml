@@ -1,30 +1,37 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Anforderungserstellung</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<title>Anforderungserstellung</title>
 </h:head>
 <h:body>
-  <h1>Anforderung erstellen</h1>
-  <h:form>
-    <h:panelGrid columns="2">
-	    <h:outputLabel value="Titel:" for="title"/>
-	    <h:inputText id="title" value="#{requirementController.title}" size="40">
-	    	<f:ajax event="keyup" render="createButton" listener="#{requirementController.checkCreateCondition()}" />
-        </h:inputText>
-	     
-	    <h:outputLabel value="Beschreibung:" for="description"/>
-	    <h:inputText id="description" value="#{requirementController.description}" size="40">
-	    	<f:ajax event="keyup" render="createButton" listener="#{requirementController.checkCreateCondition()}" />
-        </h:inputText>
-    </h:panelGrid>
-    <h:panelGrid columns="2">
-	    <p:commandButton id="createButton" value="Erstellen" action="#{requirementController.create()}" ajax="false" disabled = "#{requirementController.checkCreateCondition()}"/>
-		<p:commandButton value="Abbrechen" action="dashboard_Re?faces-redirect=true" ajax="false" /> 
-    </h:panelGrid>
-  </h:form>
+	<h1>Anforderung erstellen</h1>
+	<h:form>
+		<h:panelGrid columns="2">
+			<h:outputLabel value="Titel:" for="title" />
+			<h:inputText id="title" value="#{requirementController.title}"
+				size="40">
+				<f:ajax event="keyup" render="createButton"
+					listener="#{requirementController.checkCreateCondition()}" />
+			</h:inputText>
+
+			<h:outputLabel value="Beschreibung:" for="description" />
+			<h:inputText id="description"
+				value="#{requirementController.description}" size="40">
+				<f:ajax event="keyup" render="createButton"
+					listener="#{requirementController.checkCreateCondition()}" />
+			</h:inputText>
+		</h:panelGrid>
+		<h:panelGrid columns="2">
+			<p:commandButton id="createButton" value="Erstellen"
+				action="#{requirementController.create()}" ajax="false"
+				disabled="#{requirementController.checkCreateCondition()}" />
+			<p:commandButton value="Abbrechen"
+				action="dashboard_Re?faces-redirect=true" ajax="false" />
+		</h:panelGrid>
+	</h:form>
 </h:body>
 </html>

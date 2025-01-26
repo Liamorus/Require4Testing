@@ -8,7 +8,7 @@
   <title>Test View</title>
 </h:head>
 <h:body>
-  <h1>Testlauf view geöffnet</h1>
+  <h1>Inhalt Testlauf</h1>
   <h:form>
   <h:panelGrid columns="2" style="margin-top: 20px;">
   
@@ -16,20 +16,12 @@
 			<h:outputText value="Testfälle" style="font-weight: bold;"/>
 		<h:dataTable value="#{testcaseController.filteredTestcases}" var="filteredTestcase" border="1">
 	    <h:column>
-	        <f:facet name="header">Test Case ID</f:facet>
-	        #{filteredTestcase.testcaseId}
-	    </h:column>
+	        <f:facet name="header">Description</f:facet>
+	        #{filteredTestcase.description}
+	    </h:column>	    
 	    <h:column>
 	        <f:facet name="header">Status</f:facet>
         #{testcaseController.getStatusText(filteredTestcase)}
-	    </h:column>
-	    <h:column>
-	        <f:facet name="header">Description</f:facet>
-	        #{filteredTestcase.description}
-	    </h:column>
-	    <h:column>
-	        <f:facet name="header">testrunid</f:facet>
-	        #{filteredTestcase.testrun_Id}
 	    </h:column>
 			</h:dataTable>
     </h:panelGroup>

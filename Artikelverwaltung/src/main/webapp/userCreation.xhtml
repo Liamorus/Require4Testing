@@ -1,22 +1,25 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>LOGIN</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<title>LOGIN</title>
 </h:head>
 <h:body>
-  <h1>Login</h1>
-  <h:form>
-    <h:panelGrid columns="2">
-      <h:outputLabel value="Username:" for="username"/>
-      <h:inputText id="username" value="#{loginController.username}" size="40" />
-      <h:outputLabel value="Passwort: " for="passwort"/>
-      <h:inputText id="passwort" value="#{loginController.password}" size="40"/>
-    </h:panelGrid>
-  </h:form>
-<p:commandButton value="Erstellen" action="#{requirementController.create()}" ajax="false" />
+	<h1>Login</h1>
+	<h:form>
+		<h:panelGrid columns="2">
+			<h:outputLabel value="Username:" for="username" />
+			<h:inputText id="username" value="#{loginController.username}"
+				size="40" />
+			<h:outputLabel value="Passwort: " for="passwort" />
+			<h:inputText id="passwort" value="#{loginController.password}"
+				size="40" />
+		</h:panelGrid>
+	</h:form>
+	<p:commandButton value="Erstellen"
+		action="#{requirementController.create()}" ajax="false" />
 </h:body>
 </html>

@@ -13,13 +13,13 @@
     <h:panelGrid columns="2">
       <h:outputLabel value="Anforderung" for="requirementid"/>
       <h:selectOneMenu id="requirementid" value="#{testrunController.requirement_Id}">
-	    	<f:selectItem itemLabel="Select Requirement" itemValue="" noSelectionOption="false" />
+	    	<f:selectItem itemLabel="Anforderung auswählen" itemValue="" noSelectionOption="false" />
 	    	<f:selectItems value="#{requirementController.requirements}" var="requirement" itemLabel="#{requirement.title}" itemValue="#{requirement.requirementId}" />
 	    	<f:ajax event="valueChange" listener="#{testrunController.checkCreateCondition()}" render="createButton" />
 		</h:selectOneMenu>
-		<h:outputText value="Testuser zuweisen"/>
+		<h:outputText value="Testuser"/>
    		<h:selectOneMenu id="testuserid" value="#{testrunController.user_Id}">
-	    	<f:selectItem itemLabel="Select Testuser" itemValue="" noSelectionOption="false" />
+	    	<f:selectItem itemLabel="Testuser auswählen" itemValue="" noSelectionOption="false" />
 	    	<f:selectItems value="#{userController.tester}" var="tester" itemLabel="#{tester.username}" itemValue="#{tester.userId}" />
     		<f:ajax event="valueChange" listener="#{testrunController.checkCreateCondition()}" render="createButton" />	
 	    	<div/>

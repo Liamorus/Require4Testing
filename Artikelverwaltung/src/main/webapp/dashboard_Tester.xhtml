@@ -1,47 +1,53 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Dashboard Tester</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<title>Dashboard Tester</title>
 </h:head>
 <h:body>
-  <h1>Dashboard Tester</h1>
-  <h:form>
-  <h:outputText value="Tests" style="font-weight: bold;"/>
-	  	<h:outputText value="Testfälle" style="font-weight: bold;"/>
-	<h:dataTable value="#{testcaseController.myTestcases}" var="testcase" border="1">
-    <h:column>
-        <f:facet name="header">Test Case ID</f:facet>
-        #{testcase.testcaseId}
+	<h1>Dashboard Tester</h1>
+	<h:form>
+		<h:outputText value="Testfälle" style="font-weight: bold;" />
+		<h:dataTable value="#{testcaseController.myTestcases}" var="testcase"
+			border="1">
+			<h:column>
+				<f:facet name="header">Anforderung</f:facet>
+        #{testcase.requirementTitle}
     </h:column>
-    <h:column>
-        <f:facet name="header">Status</f:facet>
-        #{testcaseController.getStatusText(testcase)}
-    </h:column>
-    <h:column>
-        <f:facet name="header">Description</f:facet>
+			<h:column>
+				<f:facet name="header">Beschreibung</f:facet>
         #{testcase.description}
     </h:column>
-    <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Open" action="#{testcaseController.openCurrentTestcase(testcase)}"/>
-        </h:column>
-         <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Erfolgreich" rendered="#{empty testcase.status}" action="#{testcaseController.setStatusSuccessful(testcase)}"/>
-        </h:column>
-         <h:column>
-            <f:facet name="header"></f:facet>
-            <h:commandButton value="Fehlgeschlagen" rendered="#{empty testcase.status}" action="#{testcaseController.setStatusFailed(testcase)}"/>
-        </h:column>
-</h:dataTable>
-  
-    <h:panelGrid columns="2">
-      <p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
-    </h:panelGrid>
-  </h:form>
+			<h:column>
+				<f:facet name="header">Status</f:facet>
+        #{testcaseController.getStatusText(testcase)}
+    </h:column>
+
+			<h:column>
+				<f:facet name="header"></f:facet>
+				<h:commandButton value="Open"
+					action="#{testcaseController.openCurrentTestcase(testcase)}" />
+			</h:column>
+			<h:column>
+				<f:facet name="header"></f:facet>
+				<h:commandButton value="Erfolgreich"
+					rendered="#{empty testcaseController.getStatusText(testcase)}"
+					action="#{testcaseController.setStatusSuccessful(testcase)}" />
+			</h:column>
+			<h:column>
+				<f:facet name="header"></f:facet>
+				<h:commandButton value="Fehlgeschlagen"
+					rendered="#{empty testcaseController.getStatusText(testcase)}"
+					action="#{testcaseController.setStatusFailed(testcase)}" />
+			</h:column>
+		</h:dataTable>
+		<h:panelGrid columns="2">
+			<p:commandButton value="Ausloggen"
+				action="#{userController.logout()}" ajax="false" />
+		</h:panelGrid>
+	</h:form>
 </h:body>
 </html>

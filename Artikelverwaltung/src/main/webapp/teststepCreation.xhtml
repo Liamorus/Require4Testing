@@ -1,32 +1,42 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Testschritterstellung</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<title>Testschritterstellung</title>
 </h:head>
 <h:body>
-  <h1>Testschritt erstellen</h1>
-  <h:form>
-    <h:panelGrid columns="2">
-     
-      <h:outputLabel value="Testfall:" for="testcasenr"/>
-      <h:selectOneMenu id="testCase" value="#{teststepController.testcase_Id}">
-	    	<f:selectItem itemLabel="Testfall auswählen" itemValue="" noSelectionOption="false" />
-	    	<f:selectItems value="#{testcaseController.getTestcases()}" var="testcase" itemLabel="#{testcase.description}" itemValue="#{testcase.testcaseId}" />
-	    	<f:ajax event="valueChange" listener="#{teststepController.checkCreateCondition()}" render="createButton" />
-		</h:selectOneMenu>
-		
-      <h:outputLabel value="Titel:" for="title"/>
-      <h:inputText id="title" value="#{teststepController.title}" size="40">
-	    	<f:ajax event="keyup" render="createButton" listener="#{testcaseController.checkCreateCondition()}" />
-	    	</h:inputText>
-      <p:commandButton id="createButton" value="Erstellen" action="#{teststepController.create()}" ajax="false" disabled="#{teststepController.checkCreateCondition()}"/>
-      <p:commandButton value="Abbrechen" action="dashboard_Testfall?faces-redirect=true" ajax="false" />
-    </h:panelGrid>
-  </h:form>
+	<h1>Testschritt erstellen</h1>
+	<h:form>
+		<h:panelGrid columns="2">
+
+			<h:outputLabel value="Testfall:" for="testcasenr" />
+			<h:selectOneMenu id="testCase"
+				value="#{teststepController.testcase_Id}">
+				<f:selectItem itemLabel="Testfall auswählen" itemValue=""
+					noSelectionOption="false" />
+				<f:selectItems value="#{testcaseController.getTestcases()}"
+					var="testcase" itemLabel="#{testcase.description}"
+					itemValue="#{testcase.testcaseId}" />
+				<f:ajax event="valueChange"
+					listener="#{teststepController.checkCreateCondition()}"
+					render="createButton" />
+			</h:selectOneMenu>
+
+			<h:outputLabel value="Titel:" for="title" />
+			<h:inputText id="title" value="#{teststepController.title}" size="40">
+				<f:ajax event="keyup" render="createButton"
+					listener="#{testcaseController.checkCreateCondition()}" />
+			</h:inputText>
+			<p:commandButton id="createButton" value="Erstellen"
+				action="#{teststepController.create()}" ajax="false"
+				disabled="#{teststepController.checkCreateCondition()}" />
+			<p:commandButton value="Abbrechen"
+				action="dashboard_Testfall?faces-redirect=true" ajax="false" />
+		</h:panelGrid>
+	</h:form>
 
 
 </h:body>

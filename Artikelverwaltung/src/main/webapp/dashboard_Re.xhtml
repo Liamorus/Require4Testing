@@ -1,29 +1,32 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
 <h:head>
-  <link rel="stylesheet" type="text/css" media="screen" href="style.css"/>
-  <title>Dashboard Requirement Engineer</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="style.css" />
+	<title>Dashboard Requirement Engineer</title>
 </h:head>
 <h:body>
-  <h1>Dashboard Requirement Engineer</h1>
-  <h:form>
-  <h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
-        <h:column>
-            <f:facet name="header">Title</f:facet>
+	<h1>Dashboard Requirement Engineer</h1>
+	<h:form>
+		<h:dataTable value="#{requirementController.getRequirements()}" var="req" border="1">
+			<h:column>
+				<f:facet name="header">Titel</f:facet>
             #{req.title}
         </h:column>
-        <h:column>
-            <f:facet name="header">Description</f:facet>
+			<h:column>
+				<f:facet name="header">Beschreibung</f:facet>
             #{req.description}
         </h:column>
-	</h:dataTable>
-    <h:panelGrid columns="3" style="margin-top: 20px;" >
-	  	<p:commandButton value="Anforderung erstellen" action="#{requirementController.createRequirement_redirect()}" ajax="false" />
-      	<p:commandButton value="Ausloggen" action="#{userController.logout()}" ajax="false" />
-    </h:panelGrid>
-  </h:form>
+		</h:dataTable>
+		<h:panelGrid columns="3" style="margin-top: 20px; ">
+			<p:commandButton value="Anforderung erstellen"
+				action="#{requirementController.createRequirement_redirect()}"
+				ajax="false" />
+			<p:commandButton value="Ausloggen"
+				action="#{userController.logout()}" ajax="false" />
+		</h:panelGrid>
+	</h:form>
 </h:body>
 </html>
