@@ -1,3 +1,4 @@
+package controller;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +15,7 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Named;
+import model.User;
 
 @Named
 @SessionScoped
@@ -205,46 +207,4 @@ public class UserController implements Serializable {
 	public User getCurrentUser() {
 		return this.currentUser;
 	}
-
-	// Embedded User Class
-	public class User {
-		private Integer userId;
-		private String username;
-		private String password;
-		private Integer usertype;
-
-		public Integer getUserId() {
-			return userId;
-		}
-
-		public void setUserId(Integer userId) {
-			this.userId = userId;
-		}
-
-		public String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-
-		public Integer getUsertype() {
-			return usertype;
-		}
-
-		public void setUsertype(Integer usertype) {
-			this.usertype = usertype;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(String password) {
-			this.password = password;
-		}
-
-	}
-
 }

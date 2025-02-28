@@ -1,3 +1,4 @@
+package controller;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import model.Requirement;
 
 @Named
 @SessionScoped
@@ -124,38 +126,4 @@ public class RequirementController implements Serializable {
 		loadRequirements();
 		return "dashboard_Re?faces-redirect=true";
 	}
-
-//Nested Class for List Objects
-	public class Requirement {
-
-		private int requirementId;
-		private String title;
-		private String description;
-
-		// Getter Setter for Requirement Class
-		public Integer getRequirementId() {
-			return requirementId;
-		}
-
-		public void setRequirementId(Integer requirementId) {
-			this.requirementId = requirementId;
-		}
-
-		public String getTitle() {
-			return title;
-		}
-
-		public void setTitle(String title) {
-			this.title = title;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-	}
-
 }
