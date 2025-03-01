@@ -1,23 +1,23 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
-import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
 import model.Requirement;
 
 @Named
 @SessionScoped
 public class RequirementController implements Serializable {
+	private final static EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	private Integer requirementId;
 	private String title;
 	private String description;
@@ -61,30 +61,24 @@ public class RequirementController implements Serializable {
 	}
 
 	public void loadRequirements() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		requirements.clear();
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT requirementid,  title, description, testuser_id, done FROM requirement order by requirementid desc";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Requirement req = new Requirement();
-				req.setRequirementId(resultSet.getInt("requirementid"));
-				req.setTitle(resultSet.getString("title"));
-				req.setDescription(resultSet.getString("description"));
-
-				requirements.add(req);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        List<Requirement> result = new ArrayList<>();
+        try {
+            tx.begin();
+            Query q = em.createQuery("SELECT r FROM Requirement r ORDER BY r.requirementId DESC", Requirement.class);
+            result = q.getResultList();
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+		System.out.print(result.toString());
+		requirements.addAll(result);
 	}
 
 	public boolean checkCreateCondition() {
@@ -99,31 +93,24 @@ public class RequirementController implements Serializable {
 
 //create Requirement
 	public String create() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "INSERT INTO requirement (title, description) VALUES (?, ?)";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setString(1, title);
-			preparedStatement.setString(2, description);
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		loadRequirements();
-		return "dashboard_Re?faces-redirect=true";
+		EntityManager em = emf.createEntityManager();
+	    EntityTransaction tx = em.getTransaction();
+	    try {
+	        tx.begin();
+	        Requirement req = new Requirement();
+	        req.setTitle(title);
+	        req.setDescription(description);
+	        em.persist(req);
+	        tx.commit();
+	    } catch (Exception e) {
+	        if (tx.isActive()) {
+	            tx.rollback();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        em.close();
+	    }
+	    loadRequirements();  // Refresh the list of requirements after insertion
+	    return "dashboard_Re?faces-redirect=true";
 	}
 }

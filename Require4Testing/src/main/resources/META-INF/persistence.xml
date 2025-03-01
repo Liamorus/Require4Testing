@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd"
+             version="2.2">
+    <persistence-unit name="Require4TestingPU" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Entity-Klassen -->
+        <class>model.Requirement</class>
+		<class>model.Test</class>
+		<class>model.Testcase</class>
+		<class>model.Testrun</class>
+		<class>model.TestStep</class>
+		<class>model.User</class>
+
+        <properties>
+            <!-- JDBC-Daten -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="admin"/>
+
+            <!-- Hibernate-Dialekt und Optionen -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.show_sql" value="true"/>
+        </properties>
+    </persistence-unit>
+</persistence>

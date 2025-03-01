@@ -15,7 +15,7 @@
 			border="1">
 			<h:column>
 				<f:facet name="header">Anforderung</f:facet>
-        #{testcase.requirementTitle}
+        #{testcase.getRequirement().getDescription()}
     </h:column>
 			<h:column>
 				<f:facet name="header">Beschreibung</f:facet>

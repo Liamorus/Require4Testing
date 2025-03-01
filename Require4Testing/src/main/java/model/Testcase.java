@@ -1,13 +1,63 @@
 package model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "testcase")
 public class Testcase {
+
+	public Testcase() {}
+	
+	@Id 
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer testcaseId;
+	
+	@Column(name = "testrun_id")
 	private Integer testrun_Id;
+	
+	@Column
 	private String status;
+	
+	@Column(name = "user_id")
 	private Integer user_Id;
+	
+	@Column
 	private String description;
+	
+	@Column(name = "requirement_id")
 	private Integer requirement_Id;
-	private String requirementTitle;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "testrun_id", insertable = false, updatable = false)
+	private Testrun testrun;
+
+	public Testrun getTestrun() {
+	    return testrun;
+	}
+
+	public void setTestrun(Testrun testrun) {
+	    this.testrun = testrun;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="requirement_id", insertable=false, updatable=false)
+	private Requirement requirement;
+	
+	public Requirement getRequirement() {
+	    return requirement;
+	}
+	
+	public void setRequirement(Requirement requirement) {
+	    this.requirement = requirement;
+	}
 
 	// Getters and Setters for Testcase properties
 	public Integer getTestcaseId() {
@@ -56,13 +106,5 @@ public class Testcase {
 
 	public void setUser_Id(Integer user_Id) {
 		this.user_Id = user_Id;
-	}
-
-	public String getRequirementTitle() {
-		return requirementTitle;
-	}
-
-	public void setRequirementTitle(String requirementTitle) {
-		this.requirementTitle = requirementTitle;
 	}
 }

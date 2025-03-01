@@ -1,12 +1,48 @@
 package model;
 
-public class TestStep {
-	private Integer teststepId;
-	private Integer testcase_Id;
-	private String title;
-	private String testcaseDescription;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
+@Entity
+@Table(name = "teststep")
+public class TestStep {
+	
+	public TestStep() {}
+
+	@Id
+	@Column(name = "teststepid")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer teststepId;
+	
+	@Column(name = "testcase_id")
+	private Integer testcase_Id;
+	
+	@Column
+	private String title;
+	
+	@Column(name = "testcaseDescription")
+	private String testcaseDescription;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="testcase_id", insertable=false, updatable=false)
+	private Testcase testcase;
+	
 	// Getters and Setters
+	public Testcase getTestcase() {
+	    return testcase;
+	}
+	
+	public void setTestcase(Testcase testcase) {
+	    this.testcase = testcase;
+	}
+	
 	public Integer getTeststepId() {
 		return teststepId;
 	}

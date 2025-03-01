@@ -1,9 +1,5 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +7,19 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import model.Testcase;
 
 @Named
 @SessionScoped
 public class TestcaseController implements Serializable {
+	
+	private final static EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	private Integer testcaseId;
 	private Integer testrun_Id;
 	private String status;
@@ -52,91 +56,44 @@ public class TestcaseController implements Serializable {
 	}
 
 	public void loadTestcases() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		testcases.clear();
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT testcaseid,testrun_id, status,  description FROM testcase order by testcaseid";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testcase testcaseData = new Testcase();
-				testcaseData.setTestcaseId(resultSet.getInt("testcaseid"));
-				testcaseData.setTestrun_Id(resultSet.getInt("testrun_id"));
-				testcaseData.setStatus(resultSet.getString("status"));
-				testcaseData.setDescription(resultSet.getString("description"));
-				testcases.add(testcaseData);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void loadFilteredTestcases() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		filteredTestcases.clear();
-		Integer currentTestrun_Id = testrunController.getCurrentTestrun().getTestrunId();
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT testcaseid, testrun_id, status,  description FROM testcase where testrun_id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, currentTestrun_Id);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testcase testcaseData = new Testcase();
-				testcaseData.setTestcaseId(resultSet.getInt("testcaseid"));
-				testcaseData.setTestrun_Id(resultSet.getInt("testrun_id"));
-				testcaseData.setStatus(resultSet.getString("status"));
-				testcaseData.setDescription(resultSet.getString("description"));
-				filteredTestcases.add(testcaseData);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Testcase> query = em.createQuery("SELECT t FROM Testcase t ORDER BY t.testcaseId", Testcase.class);
+            testcases = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
+	 public void loadFilteredTestcases() {
+	        Integer currentTestrunId = testrunController.getCurrentTestrun().getTestrunId();
+	        EntityManager em = emf.createEntityManager();
+	        try {
+	            TypedQuery<Testcase> query = em.createQuery(
+	                "SELECT t FROM Testcase t WHERE t.testrun_Id = :testrun_Id", Testcase.class);
+	            query.setParameter("testrun_Id", currentTestrunId);
+	            filteredTestcases = query.getResultList();
+	        } finally {
+	            em.close();
+	        }
+	    }
 
 	public boolean checkConnectCondition() {
 		return testcaseId != null;
 	}
 
+	
 	public void loadMyTestcases() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		myTestcases.clear();
-		// Integer currentTestrun_Id =
-		// testrunController.getCurrentTestrun().getTestrunId();
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT tc.testcaseid, tc.testrun_id, tc.status,  tc.description, r.title FROM testcase tc left join requirement r on r.requirementid = tc.requirement_id left join testrun tr on tr.testrunid = tc.testrun_id where tr.user_id = ? order by r.requirementid";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, userController.getCurrentUser().getUserId());
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testcase testcaseData = new Testcase();
-				testcaseData.setTestcaseId(resultSet.getInt("testcaseid"));
-				testcaseData.setTestrun_Id(resultSet.getInt("testrun_id"));
-				testcaseData.setStatus(resultSet.getString("status"));
-				testcaseData.setDescription(resultSet.getString("description"));
-				testcaseData.setRequirementTitle(resultSet.getString("title"));
-				myTestcases.add(testcaseData);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    Integer currentUserId = userController.getCurrentUser().getUserId();
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        TypedQuery<Testcase> query = em.createQuery(
+	            "SELECT t FROM Testcase t JOIN FETCH t.requirement r JOIN FETCH t.testrun tr " +
+	            "WHERE tr.user_Id = :userId ORDER BY r.requirementId", Testcase.class);
+	        query.setParameter("userId", currentUserId);
+	        myTestcases = query.getResultList();
+	    } finally {
+	        em.close();
+	    }
 	}
 
 	public String getStatusText(Testcase testcase) {
@@ -147,144 +104,75 @@ public class TestcaseController implements Serializable {
 		}
 		return "";
 	}
-
+	
 	public void loadAvailabTestcases() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		availableTestcases.clear();
-		Integer currentTestrun_requirementId = testrunController.getCurrentTestrun().getRequirement_Id();
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT testcaseid, testrun_id, status,  description FROM testcase where testrun_id is null and requirement_id = ?";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, currentTestrun_requirementId);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testcase testcaseData = new Testcase();
-				testcaseData.setTestcaseId(resultSet.getInt("testcaseid"));
-				testcaseData.setTestrun_Id(resultSet.getInt("testrun_id"));
-				testcaseData.setStatus(resultSet.getString("status"));
-				testcaseData.setDescription(resultSet.getString("description"));
-				availableTestcases.add(testcaseData);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+        Integer currentRequirementId = testrunController.getCurrentTestrun().getRequirement_Id();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Testcase> query = em.createQuery(
+                "SELECT t FROM Testcase t WHERE t.testrun_Id IS NULL AND t.requirement_Id = :reqId", Testcase.class);
+            query.setParameter("reqId", currentRequirementId);
+            availableTestcases = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 	public String setStatusFailed(Testcase testcase) {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "UPDATE testcase SET status = ? WHERE testcaseid = ?";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setString(1, "FAILED");
-			preparedStatement.setInt(2, testcase.getTestcaseId());// aus objekt holen
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		return "dashboard_testrunOpen?faces-redirect=true";
-	}
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Testcase t = em.find(Testcase.class, testcase.getTestcaseId());
+            if (t != null) {
+                t.setStatus("FAILED");
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return "dashboard_testrunOpen?faces-redirect=true";
+    }
 
 	public String setStatusSuccessful(Testcase testcase) {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "UPDATE testcase SET status = ? WHERE testcaseid = ?";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setString(1, "SUCCESSFUL");
-			preparedStatement.setInt(2, testcase.getTestcaseId());// aus objekt holen
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		return "dashboard_testrunOpen?faces-redirect=true";
-	}
-
-	public void setStatusDone() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		testcases.clear();
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT testcaseid,testrun_id, status,  description FROM testcase order by testcaseid";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testcase testcaseData = new Testcase();
-				testcaseData.setTestcaseId(resultSet.getInt("testcaseid"));
-				testcaseData.setTestrun_Id(resultSet.getInt("testrun_id"));
-				testcaseData.setStatus(resultSet.getString("status"));
-				testcaseData.setDescription(resultSet.getString("description"));
-				testcases.add(testcaseData);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Testcase t = em.find(Testcase.class, testcase.getTestcaseId());
+            if (t != null) {
+                t.setStatus("SUCCESSFUL");
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return "dashboard_testrunOpen?faces-redirect=true";
+    }
+	
 	public String connectCasewithRun() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "UPDATE testcase SET testrun_id = ? WHERE testcaseid = ?";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setInt(1, testrunController.getCurrentTestrun().getTestrunId());
-			preparedStatement.setInt(2, testcaseId);
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		return "dashboard_testrunOpen?faces-redirect=true";
-	}
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Testcase t = em.find(Testcase.class, testcaseId);
+            if (t != null) {
+                t.setTestrun_Id(testrunController.getCurrentTestrun().getTestrunId());
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return "dashboard_testrunOpen?faces-redirect=true";
+    }
 
 	public String openCurrentTestcase(Testcase testcaseDS) {
 		currentTestcase.setTestcaseId(testcaseDS.getTestcaseId());
@@ -293,33 +181,25 @@ public class TestcaseController implements Serializable {
 
 	// create testcase
 	public String create() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "INSERT INTO testcase (description, status, requirement_id) VALUES (?, ?, ?)";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setString(1, description);
-			preparedStatement.setBoolean(2, false);
-			preparedStatement.setInt(3, requirement_Id);
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-
-		return "dashboard_Testfall?faces-redirect=true";
+	    EntityManager em = emf.createEntityManager();
+	    EntityTransaction tx = em.getTransaction();
+	    try {
+	        tx.begin();
+	        Testcase newTestcase = new Testcase();
+	        newTestcase.setDescription(description);
+	        newTestcase.setStatus("false");
+	        newTestcase.setRequirement_Id(requirement_Id);
+	        em.persist(newTestcase);
+	        tx.commit();
+	    } catch (Exception e) {
+	        if (tx.isActive()) {
+	            tx.rollback();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        em.close();
+	    }
+	    return "dashboard_Testfall?faces-redirect=true";
 	}
 
 	// Getters and Setters

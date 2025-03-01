@@ -1,10 +1,5 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +10,18 @@ import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import model.User;
 
 @Named
 @SessionScoped
 public class UserController implements Serializable {
+	
+	private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	private String username;
 	private String password;
 	private Integer usertype;
@@ -47,129 +49,86 @@ public class UserController implements Serializable {
 	}
 
 	public void loadTester() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT u FROM User u WHERE u.usertype = :utype", User.class);
+            query.setParameter("utype", 4);
+            tester = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
-		tester.clear();
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT userid,username,usertype FROM users where usertype = 4";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				User user = new User();
-				user.setUserId(resultSet.getInt("userid"));
-				user.setUsername(resultSet.getString("username"));
-				user.setUsertype(resultSet.getInt("usertype"));
+    public void loadUsers() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> query = em.createQuery("SELECT u FROM User u", User.class);
+            users = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
-				tester.add(user);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public String login() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<User> query = em.createQuery(
+                    "SELECT u FROM User u WHERE u.username = :uname", User.class);
+            query.setParameter("uname", username);
+            List<User> result = query.getResultList();
+            if (!result.isEmpty()) {
+                User user = result.get(0);
+                if (user.getPassword().equals(password)) {
+                    System.out.println("Login successful");
+                    currentUser = user;
+                    String destination = "login"; // default destination
+                    int utype = user.getUsertype();
+                    switch (utype) {
+                        case 0:
+                            destination = "dashboard_Admin";
+                            break;
+                        case 1:
+                            destination = "dashboard_Re";
+                            break;
+                        case 2:
+                            destination = "dashboard_TestManager";
+                            break;
+                        case 3:
+                            destination = "dashboard_Testfall";
+                            break;
+                        case 4:
+                            destination = "dashboard_Tester";
+                            break;
+                        default:
+                            break;
+                    }
+                    return destination + "?faces-redirect=true";
+                } else {
+                    System.out.println("Wrong password");
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage("Falsches Passwort"));
+                }
+            } else {
+                System.out.println("Username not found");
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage("Benutzername nicht gefunden"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return "";
+    }
 
-	public void loadUsers() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		users.clear();
-		try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-			String sql = "SELECT userid,username,usertype FROM users";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				User user = new User();
-				user.setUserId(resultSet.getInt("userid"));
-				user.setUsername(resultSet.getString("username"));
-				user.setUsertype(resultSet.getInt("usertype"));
-
-				users.add(user);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public String login() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-
-			System.out.println("Verbunden");
-			String sql = "SELECT * FROM users WHERE username = '" + username + "';";
-			// + "WHERE USERNAME = '" + username + "'";
-
-			Statement statement = connection.createStatement();
-			ResultSet rs = statement.executeQuery(sql);
-
-			connection.close();
-			if (rs.next()) {
-				System.out.println("Username gefunden");
-				if (rs.getString("PASSWORD").equals(password)) {
-					String destination = "login";
-
-					System.out.println("Name = " + rs.getString("USERNAME"));
-					System.out.println("id = " + rs.getInt("USERID"));
-					System.out.println("Login erfolgreich");
-					currentUser.setUserId(rs.getInt("USERID"));
-					currentUser.setUsername(rs.getString("USERNAME"));
-					currentUser.setUsertype(rs.getInt("USERTYPE"));
-
-					switch (rs.getInt("USERTYPE")) {
-					case 0:
-						destination = "dashboard_Admin";
-						break;
-					case 1:
-						destination = "dashboard_Re";
-						break;
-					case 2:
-						destination = "dashboard_TestManager";
-						break;
-					case 3:
-						destination = "dashboard_Testfall";
-						break;
-					case 4:
-						destination = "dashboard_Tester";
-						break;
-					default:
-						break;
-					}
-
-					return destination + "?faces-redirect=true";
-
-				} else {
-					System.out.println("Passwort falsch");
-				}
-
-			} else {
-				System.out.println("Username nicht gefunden");
-			}
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		return "";
-
-	}
 
 	public String logout() {
 		return "login?faces-redirect=true";
 	}
 
 	// Validator
-	// Überprüft die Inputs
+	// Checks the Inputs
 	public void loginValidator(FacesContext context, UIComponent component, Object value) throws ValidatorException {
 		String username = (String) value;
 		if (username.equals("1")) {

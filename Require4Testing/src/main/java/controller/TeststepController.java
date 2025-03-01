@@ -1,9 +1,5 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +7,18 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import model.TestStep;
 
 @Named
 @SessionScoped
 public class TeststepController implements Serializable {
-
+	private final static EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	private Integer teststepId;
 	private Integer testcase_Id;
 	private String testcaseDescription;
@@ -43,92 +45,60 @@ public class TeststepController implements Serializable {
 	}
 
 	public String create() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "INSERT INTO teststep (testcase_id, title) VALUES (?, ?)";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setInt(1, testcase_Id);
-			preparedStatement.setString(2, title);
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-		loadTestSteps();
-		return "dashboard_Testfall?faces-redirect=true";
-	}
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            TestStep newTestStep = new TestStep();
+            newTestStep.setTestcase_Id(testcase_Id);
+            newTestStep.setTitle(title);
+            em.persist(newTestStep);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        // Reload list after insertion
+        loadTestSteps();
+        return "dashboard_Testfall?faces-redirect=true";
+    }
 
 	public void loadTestSteps() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		testSteps.clear();
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT ts.teststepid, ts.testcase_id, ts.title, tc.description FROM teststep ts left join testcase tc on tc.testcaseid = ts.testcase_id order by ts.testcase_id";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				TestStep stepData = new TestStep();
-				stepData.setTeststepId(resultSet.getInt("teststepid"));
-				stepData.setTestcase_Id(resultSet.getInt("testcase_id"));
-				stepData.setTitle(resultSet.getString("title"));
-				stepData.setTestcaseDescription(resultSet.getString("description"));
-				testSteps.add(stepData);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        TypedQuery<TestStep> query = em.createQuery(
+	            "SELECT t FROM TestStep t JOIN FETCH t.testcase ORDER BY t.testcase_Id", TestStep.class);
+	        testSteps = query.getResultList();
+	    } finally {
+	        em.close();
+	    }
 	}
 
 	public void loadfilteredTestSteps() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-		Integer testcaseId;
-		filteredTestSteps.clear();
-		if (testcaseController.getCurrentTestcase().getTestcaseId() != null) {
-			testcaseId = testcaseController.getCurrentTestcase().getTestcaseId();
-		} else {
-			testcaseId = testrunController.getCurrentTestrun().getTestrunId();
-		}
+	    Integer tcId = null;
+	    if (testcaseController.getCurrentTestcase() != null && 
+	        testcaseController.getCurrentTestcase().getTestcaseId() != null) {
+	        tcId = testcaseController.getCurrentTestcase().getTestcaseId();
+	    }
 
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT ts.teststepid, ts.testcase_id, ts.title, tc.description FROM teststep ts left join testcase tc on tc.testcaseid = ts.testcase_id where ts.testcase_id = ? order by teststepid";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, testcaseId);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				TestStep stepData = new TestStep();
-				stepData.setTeststepId(resultSet.getInt("teststepid"));
-				stepData.setTestcase_Id(resultSet.getInt("testcase_id"));
-				stepData.setTitle(resultSet.getString("title"));
-				stepData.setTestcaseDescription(resultSet.getString("description"));
-				filteredTestSteps.add(stepData);
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    if (tcId != null) {
+	        EntityManager em = emf.createEntityManager();
+	        try {
+	            TypedQuery<TestStep> query = em.createQuery(
+	                "SELECT t FROM TestStep t JOIN FETCH t.testcase WHERE t.testcase_Id = :tcId ORDER BY t.teststepId",
+	                TestStep.class);
+	            query.setParameter("tcId", tcId);
+	            filteredTestSteps = query.getResultList();
+	        } finally {
+	            em.close();
+	        }
+	    } else {
+	        filteredTestSteps.clear();
+	    }
 	}
 
 	// Getters and Setter

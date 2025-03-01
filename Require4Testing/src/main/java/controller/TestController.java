@@ -1,9 +1,6 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +8,18 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import model.Test;
 
 @Named
 @SessionScoped
 public class TestController implements Serializable {
+	
+	private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	@Inject
 	private UserController userController; // Inject UserController
 
@@ -51,38 +55,29 @@ public class TestController implements Serializable {
 		return yourTests;
 	}
 
-	public void loadYourTests() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
+	public void loadTests() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Test> query = em.createQuery(
+                "SELECT t FROM Test t ORDER BY t.testrun_Id DESC", Test.class);
+            tests = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
-		tests.clear();
-
-		Integer userId = userController.getCurrentUser().getUserId();
-
-		try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-
-			String sql = "SELECT testid, testrun_id, testcase_id, user_id, done FROM test where user_id = ? order by testrun_id desc";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, userId);
-
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Test testData = new Test();
-				testData.setTestId(resultSet.getInt("testId"));
-				testData.setTestrun_Id(resultSet.getInt("testrun_Id"));
-				testData.setTestCase_Id(resultSet.getInt("testcase_Id"));
-				testData.setUser_Id(resultSet.getInt("user_Id"));
-				testData.setDone(resultSet.getBoolean("done"));
-				yourTests.add(testData);
-//	          System.out.println("Title = " + resultSet.getString("title"));
-//			 	System.out.println("Description = " + resultSet.getString("description"));
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void loadYourTests() {
+        Integer currentUserId = userController.getCurrentUser().getUserId();
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Test> query = em.createQuery(
+                "SELECT t FROM Test t WHERE t.user_Id = :user_Id ORDER BY t.testrun_Id DESC", Test.class);
+            query.setParameter("user_Id", currentUserId);
+            yourTests = query.getResultList();
+        } finally {
+            em.close();
+        }
+    }
 
 	public String openCurrentTest(Test testDS) {
 		currentTest.setTestId(testDS.getTestId());
@@ -90,64 +85,6 @@ public class TestController implements Serializable {
 		currentTest.setTestCase_Id(testDS.getTestCase_Id());
 
 		return "testOpen?faces-redirect=true";
-	}
-
-	public void loadTests() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		tests.clear();
-
-		try (Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword)) {
-			String sql = "SELECT testid, testrun_id, testcase_id, user_id, done FROM test order by testrun_id desc";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Test testData = new Test();
-				testData.setTestId(resultSet.getInt("testId"));
-				testData.setTestrun_Id(resultSet.getInt("testrun_Id"));
-				testData.setTestCase_Id(resultSet.getInt("testcase_Id"));
-				testData.setUser_Id(resultSet.getInt("user_Id"));
-				testData.setDone(resultSet.getBoolean("done"));
-				tests.add(testData);
-//	            System.out.println("Title = " + resultSet.getString("title"));
-//			 	System.out.println("Description = " + resultSet.getString("description"));
-			}
-			connection.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public String setTestDone(Test test) {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		try {
-
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sql = "UPDATE test\r\n" + "SET done = ? \n" + "WHERE testid = ?;";
-
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-			preparedStatement.setBoolean(1, true);
-			preparedStatement.setInt(2, test.getTestId());
-
-			preparedStatement.executeUpdate();
-			connection.close();
-			test.setDone(true);
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-
-		return "dashboard_Tester?faces-redirect=true";
 	}
 
 	// Getter Setter

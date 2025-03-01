@@ -1,20 +1,23 @@
 package controller;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import model.Testrun;
 
 @Named
 @SessionScoped
 public class TestrunController implements Serializable {
+	private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("Require4TestingPU");
+	
 	private Integer testrunId;
 	private Integer runNr;
 	private Integer user_Id;
@@ -33,30 +36,15 @@ public class TestrunController implements Serializable {
 	}
 
 	public void loadTestruns() {
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
-
-		testruns.clear();
-
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			String sql = "SELECT tr.testrunid, tr.runnr, tr.requirement_id , r.title FROM testrun tr left join requirement r on r.requirementid = tr.requirement_id order by tr.requirement_id asc, tr.runnr asc";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Testrun testrunData = new Testrun();
-				testrunData.setTestrunId(resultSet.getInt("testrunid"));
-				testrunData.setRunNr(resultSet.getInt("runnr"));
-				testrunData.setRequirement_Id(resultSet.getInt("requirement_id"));
-				testrunData.setRequirementTitle(resultSet.getString("title"));
-				testruns.add(testrunData);
-				connection.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        TypedQuery<Testrun> query = em.createQuery(
+	            "SELECT t FROM Testrun t LEFT JOIN FETCH t.requirement ORDER BY t.requirement.requirementId ASC, t.runNr ASC", 
+	            Testrun.class);
+	        testruns = query.getResultList();
+	    } finally {
+	        em.close();
+	    }
 	}
 
 	public boolean checkCreateCondition() {
@@ -65,38 +53,32 @@ public class TestrunController implements Serializable {
 	}
 
 	public String create() {
-		// Connect to DB
-		String jdbcURL = "jdbc:postgresql://localhost:5432/postgres";
-		String dbUsername = "postgres";
-		String dbPassword = "admin";
+        EntityManager em = emf.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            TypedQuery<Integer> query = em.createQuery(
+                "SELECT COALESCE(MAX(t.runNr), 0) + 1 FROM Testrun t WHERE t.requirement_Id = :reqId", Integer.class);
+            query.setParameter("reqId", requirement_Id);
+            Integer newRunNr = query.getSingleResult();
+            
+            Testrun newTestrun = new Testrun();
+            newTestrun.setRunNr(newRunNr);
+            newTestrun.setRequirement_Id(requirement_Id);
+            newTestrun.setUser_Id(user_Id);
 
-		try {
-			Class.forName("org.postgresql.Driver");
-			Connection connection = DriverManager.getConnection(jdbcURL, dbUsername, dbPassword);
-			System.out.println("Verbunden");
-
-			String sqlRunNr = "SELECT COALESCE(MAX(runnr), 0) + 1 as runnr FROM public.testrun WHERE requirement_id = ?";
-			PreparedStatement preparedStatementRunNr = connection.prepareStatement(sqlRunNr);
-			preparedStatementRunNr.setInt(1, requirement_Id);
-			ResultSet resultSetRunNr = preparedStatementRunNr.executeQuery();
-			resultSetRunNr.next();
-			Integer newRunNr = resultSetRunNr.getInt("runnr");
-
-			String sql = "INSERT INTO testrun (runnr, requirement_id, user_id) VALUES (?, ?,?)";
-			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			preparedStatement.setInt(1, newRunNr);
-			preparedStatement.setInt(2, requirement_Id);
-			preparedStatement.setInt(3, user_Id);
-
-			preparedStatement.executeUpdate();
-			connection.close();
-		} catch (Exception e) {
-			System.out.println("Fehler bei Sqlverbindung");
-			e.printStackTrace();
-		}
-
-		return "dashboard_TestManager?faces-redirect=true";
-	}
+            em.persist(newTestrun);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+        return "dashboard_TestManager?faces-redirect=true";
+    }
 
 	public String openCurrentTestrun(Testrun testrunDS) {
 		currentTestrun.setTestrunId(testrunDS.getTestrunId());
