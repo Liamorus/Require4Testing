@@ -21,6 +21,15 @@ public class RequirementController implements Serializable {
 	private Integer requirementId;
 	private String title;
 	private String description;
+	
+	private List<Requirement> requirements;
+
+	//Postconstruct to Load Datasets
+		@PostConstruct
+		public void init() {
+			requirements = new ArrayList<>();
+			loadRequirements();
+		}
 
 	// Getter Setter Controller for Insert
 	public int getRequirementId() {
@@ -45,15 +54,6 @@ public class RequirementController implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	private List<Requirement> requirements;
-
-//Postconstruct to Load Datasets
-	@PostConstruct
-	public void init() {
-		requirements = new ArrayList<>();
-		loadRequirements();
 	}
 
 	public List<Requirement> getRequirements() {

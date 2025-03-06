@@ -23,9 +23,9 @@ public class TestController implements Serializable {
 	@Inject
 	private UserController userController; // Inject UserController
 
-	private Integer testrunId;
+	private Integer testrun_Id;
 	private Integer testRunNr;
-	private Integer testCaseId;
+	private Integer testCase_Id;
 	private Integer user_Id;
 	private Integer requirement_Id;
 
@@ -89,11 +89,11 @@ public class TestController implements Serializable {
 
 	// Getter Setter
 	public Integer getTestrunId() {
-		return testrunId;
+		return testrun_Id;
 	}
 
 	public void setTestrunId(Integer testrunId) {
-		this.testrunId = testrunId;
+		this.testrun_Id = testrunId;
 	}
 
 	public Integer getRequirement_Id() {
@@ -113,11 +113,11 @@ public class TestController implements Serializable {
 	}
 
 	public Integer getTestCaseId() {
-		return testCaseId;
+		return testCase_Id;
 	}
 
 	public void setTestCaseId(Integer testCaseId) {
-		this.testCaseId = testCaseId;
+		this.testCase_Id = testCaseId;
 	}
 
 	public Integer getUser_Id() {

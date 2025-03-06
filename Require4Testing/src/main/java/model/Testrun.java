@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 @Table(name = "testrun")
 public class Testrun {
 	
-	public Testrun() {}
+	
 	
 	@Id
 	@Column
@@ -33,6 +33,8 @@ public class Testrun {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="requirement_id", insertable=false, updatable=false)
 	private Requirement requirement;
+
+	public Testrun() {}
 	
 	public Requirement getRequirement() {
 	    return requirement;

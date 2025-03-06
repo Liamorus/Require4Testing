@@ -14,8 +14,6 @@ import jakarta.persistence.Table;
 @Table(name = "testcase")
 public class Testcase {
 
-	public Testcase() {}
-	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer testcaseId;
@@ -39,17 +37,16 @@ public class Testcase {
 	@JoinColumn(name = "testrun_id", insertable = false, updatable = false)
 	private Testrun testrun;
 
-	public Testrun getTestrun() {
-	    return testrun;
-	}
-
-	public void setTestrun(Testrun testrun) {
-	    this.testrun = testrun;
-	}
-	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="requirement_id", insertable=false, updatable=false)
 	private Requirement requirement;
+	
+	
+	public Testcase() {}
+	
+	public Testrun getTestrun() {
+	    return testrun;
+	}
 	
 	public Requirement getRequirement() {
 	    return requirement;
@@ -58,6 +55,11 @@ public class Testcase {
 	public void setRequirement(Requirement requirement) {
 	    this.requirement = requirement;
 	}
+	
+	public void setTestrun(Testrun testrun) {
+	    this.testrun = testrun;
+	}
+	
 
 	// Getters and Setters for Testcase properties
 	public Integer getTestcaseId() {

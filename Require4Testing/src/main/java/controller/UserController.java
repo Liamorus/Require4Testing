@@ -138,6 +138,10 @@ public class UserController implements Serializable {
 		}
 	}
 
+	public User getCurrentUser() {
+		return this.currentUser;
+	}
+
 	// GETTER SETTER
 	public String getUsername() {
 		return username;
@@ -161,9 +165,5 @@ public class UserController implements Serializable {
 
 	public void setUsertype(Integer usertype) {
 		this.usertype = usertype;
-	}
-
-	public User getCurrentUser() {
-		return this.currentUser;
 	}
 }

@@ -77,11 +77,6 @@ public class TestcaseController implements Serializable {
 	        }
 	    }
 
-	public boolean checkConnectCondition() {
-		return testcaseId != null;
-	}
-
-	
 	public void loadMyTestcases() {
 	    Integer currentUserId = userController.getCurrentUser().getUserId();
 	    EntityManager em = emf.createEntityManager();
@@ -96,6 +91,24 @@ public class TestcaseController implements Serializable {
 	    }
 	}
 
+	public void loadAvailabTestcases() {
+	    Integer currentRequirementId = testrunController.getCurrentTestrun().getRequirement_Id();
+	    EntityManager em = emf.createEntityManager();
+	    try {
+	        TypedQuery<Testcase> query = em.createQuery(
+	            "SELECT t FROM Testcase t WHERE t.testrun_Id IS NULL AND t.requirement_Id = :reqId", Testcase.class);
+	        query.setParameter("reqId", currentRequirementId);
+	        availableTestcases = query.getResultList();
+	    } finally {
+	        em.close();
+	    }
+	}
+
+	public boolean checkConnectCondition() {
+		return testcaseId != null;
+	}
+
+	
 	public String getStatusText(Testcase testcase) {
 		if ("SUCCESSFUL".equals(testcase.getStatus())) {
 			return "Erledigt";
@@ -105,18 +118,6 @@ public class TestcaseController implements Serializable {
 		return "";
 	}
 	
-	public void loadAvailabTestcases() {
-        Integer currentRequirementId = testrunController.getCurrentTestrun().getRequirement_Id();
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Testcase> query = em.createQuery(
-                "SELECT t FROM Testcase t WHERE t.testrun_Id IS NULL AND t.requirement_Id = :reqId", Testcase.class);
-            query.setParameter("reqId", currentRequirementId);
-            availableTestcases = query.getResultList();
-        } finally {
-            em.close();
-        }
-    }
 	public String setStatusFailed(Testcase testcase) {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();

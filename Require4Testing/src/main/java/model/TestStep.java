@@ -13,8 +13,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "teststep")
 public class TestStep {
-	
-	public TestStep() {}
 
 	@Id
 	@Column(name = "teststepid")
@@ -27,12 +25,15 @@ public class TestStep {
 	@Column
 	private String title;
 	
-	@Column(name = "testcaseDescription")
-	private String testcaseDescription;
+	//@Column(name = "testcaseDescription")
+	//private String testcaseDescription;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="testcase_id", insertable=false, updatable=false)
 	private Testcase testcase;
+	
+	
+	public TestStep() {}
 	
 	// Getters and Setters
 	public Testcase getTestcase() {
@@ -66,13 +67,4 @@ public class TestStep {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
-	public String getTestcaseDescription() {
-		return testcaseDescription;
-	}
-
-	public void setTestcaseDescription(String testcaseDescription) {
-		this.testcaseDescription = testcaseDescription;
-	}
-
 }

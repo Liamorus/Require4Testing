@@ -78,6 +78,11 @@ public class TeststepController implements Serializable {
 	    }
 	}
 
+	public List<TestStep> getTestSteps() {
+		loadTestSteps();
+		return testSteps;
+	}
+
 	public void loadfilteredTestSteps() {
 	    Integer tcId = null;
 	    if (testcaseController.getCurrentTestcase() != null && 
@@ -99,6 +104,12 @@ public class TeststepController implements Serializable {
 	    } else {
 	        filteredTestSteps.clear();
 	    }
+	}
+
+	public List<TestStep> getfilteredTestSteps() {
+		loadfilteredTestSteps();
+	
+		return filteredTestSteps;
 	}
 
 	// Getters and Setter
@@ -124,17 +135,6 @@ public class TeststepController implements Serializable {
 
 	public void setTestcase_Id(Integer testcase_Id) {
 		this.testcase_Id = testcase_Id;
-	}
-
-	public List<TestStep> getTestSteps() {
-		loadTestSteps();
-		return testSteps;
-	}
-
-	public List<TestStep> getfilteredTestSteps() {
-		loadfilteredTestSteps();
-
-		return filteredTestSteps;
 	}
 
 	public String getTestcaseDescription() {

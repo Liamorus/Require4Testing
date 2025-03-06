@@ -88,6 +88,15 @@ public class TestrunController implements Serializable {
 		return "testrunOpen?faces-redirect=true";
 	}
 
+	public List<Testrun> getTestruns() {
+		loadTestruns();
+		return testruns;
+	}
+
+	public Testrun getCurrentTestrun() {
+		return currentTestrun;
+	}
+
 	// Getters and Setters
 	public Integer getTestrunId() {
 		return testrunId;
@@ -127,14 +136,5 @@ public class TestrunController implements Serializable {
 
 	public void setRequirementTitle(String requirementTitle) {
 		this.requirementTitle = requirementTitle;
-	}
-
-	public List<Testrun> getTestruns() {
-		loadTestruns();
-		return testruns;
-	}
-
-	public Testrun getCurrentTestrun() {
-		return currentTestrun;
 	}
 }
