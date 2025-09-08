@@ -127,17 +127,6 @@ public class UserController implements Serializable {
 		return "login?faces-redirect=true";
 	}
 
-	// Validator
-	// Checks the Inputs
-	public void loginValidator(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-		String username = (String) value;
-		if (username.equals("1")) {
-			throw new ValidatorException(new FacesMessage("if", ""));
-		} else {
-			throw new ValidatorException(new FacesMessage("else", ""));
-		}
-	}
-
 	public User getCurrentUser() {
 		return this.currentUser;
 	}

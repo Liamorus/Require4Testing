@@ -11,8 +11,6 @@
 	<h1>Testfall erstellen</h1>
 	<h:form>
 		<h:panelGrid columns="2">
-
-
 			<h:outputLabel value="Anforderung" for="title" />
 			<h:selectOneMenu id="requirement"
 				value="#{testcaseController.requirement_Id}">
@@ -25,8 +23,6 @@
 					listener="#{testcaseController.checkCreateCondition()}"
 					render="createButton" />
 			</h:selectOneMenu>
-
-
 			<h:outputLabel value="Beschreibung:" for="description" />
 			<h:inputText id="description"
 				value="#{testcaseController.description}" size="40">
@@ -34,7 +30,6 @@
 					listener="#{testcaseController.checkCreateCondition()}" />
 			</h:inputText>
 		</h:panelGrid>
-
 		<h:panelGrid columns="2">
 			<p:commandButton id="createButton" value="Erstellen"
 				action="#{testcaseController.create()}" ajax="false"
@@ -43,7 +38,5 @@
 				action="dashboard_Testfall?faces-redirect=true" ajax="false" />
 		</h:panelGrid>
 	</h:form>
-
-
 </h:body>
 </html>

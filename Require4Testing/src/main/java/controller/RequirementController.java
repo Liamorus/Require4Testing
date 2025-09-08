@@ -25,11 +25,11 @@ public class RequirementController implements Serializable {
 	private List<Requirement> requirements;
 
 	//Postconstruct to Load Datasets
-		@PostConstruct
-		public void init() {
-			requirements = new ArrayList<>();
-			loadRequirements();
-		}
+	@PostConstruct
+	public void init() {
+		requirements = new ArrayList<>();
+		loadRequirements();
+	}
 
 	// Getter Setter Controller for Insert
 	public int getRequirementId() {
@@ -77,21 +77,20 @@ public class RequirementController implements Serializable {
         } finally {
             em.close();
         }
-		System.out.print(result.toString());
-		requirements.addAll(result);
+		requirements = result;
 	}
 
 	public boolean checkCreateCondition() {
-		// If one of the following cases appear create is diasbled
+		// If one of the following cases appear create is disabled
 		return (title == null || title.trim().isEmpty() || description == null || description.trim().isEmpty());
 	}
 
-//Redirect
+	//Redirect
 	public String createRequirement_redirect() {
 		return "requirementCreation?faces-redirect=true";
 	}
 
-//create Requirement
+	//create Requirement
 	public String create() {
 		EntityManager em = emf.createEntityManager();
 	    EntityTransaction tx = em.getTransaction();
@@ -113,4 +112,50 @@ public class RequirementController implements Serializable {
 	    loadRequirements();  // Refresh the list of requirements after insertion
 	    return "dashboard_Re?faces-redirect=true";
 	}
+		//delete Requirement
+		public String delete(Requirement requirement) {
+			EntityManager em = emf.createEntityManager();
+		    EntityTransaction tx = em.getTransaction();
+		    try {
+		    	tx.begin();
+
+		        // Delete TestStep-Datasets connected to Requirement
+		    	Query deleteTeststeps = em.createQuery(
+		            "DELETE FROM TestStep ts WHERE ts.testcase.testrun.requirement.requirementId = :reqId"
+		        );
+		        deleteTeststeps.setParameter("reqId", requirement.getRequirementId());
+		        deleteTeststeps.executeUpdate();
+
+		        // Delete TestCase-Datasets connected to Requirement
+		        Query deleteTestcases = em.createQuery(
+		            "DELETE FROM Testcase tc WHERE tc.testrun.requirement.requirementId = :reqId"
+		        );
+		        deleteTestcases.setParameter("reqId", requirement.getRequirementId());
+		        deleteTestcases.executeUpdate();
+
+		        // Delete Testrun-Datasets connected to Requirement
+		        Query deleteTestruns = em.createQuery(
+		            "DELETE FROM Testrun tr WHERE tr.requirement.requirementId = :reqId"
+		        );
+		        deleteTestruns.setParameter("reqId", requirement.getRequirementId());
+		        deleteTestruns.executeUpdate();
+
+		        // Delete requirement itself
+		        if (!em.contains(requirement)) {
+		            requirement = em.merge(requirement);
+		        }
+		        em.remove(requirement);
+
+		        tx.commit();
+		    } catch (Exception e) {
+		        if (tx.isActive()) {
+		            tx.rollback();
+		        }
+		        e.printStackTrace();
+		    } finally {
+		        em.close();
+		    }
+		    loadRequirements();  // Refresh the list of requirements after deletion
+		    return "dashboard_Re?faces-redirect=true";
+		}
 }

@@ -11,7 +11,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import model.Requirement;
 import model.Testcase;
 
 @Named
@@ -51,7 +53,7 @@ public class TestcaseController implements Serializable {
 	}
 
 	public boolean checkCreateCondition() {
-		// If one of the following cases appear create is diasbled
+		// If one of the following cases appear create is disabled
 		return (requirement_Id == null || description == null || description.trim().isEmpty());
 	}
 
@@ -202,7 +204,65 @@ public class TestcaseController implements Serializable {
 	    }
 	    return "dashboard_Testfall?faces-redirect=true";
 	}
+	
+	public String delete(Testcase testcase) { 
+	    EntityManager em = emf.createEntityManager();
+	    EntityTransaction tx = em.getTransaction();
+	    try {
+	        tx.begin();
+	        
+	        // Delete Teststeps connected to Testcase
+	        Query deleteTeststeps = em.createQuery(
+	            "DELETE FROM TestStep ts WHERE ts.testcase.testcaseId = :tcId"
+	        );
+	        deleteTeststeps.setParameter("tcId", testcase.getTestcaseId());
+	        deleteTeststeps.executeUpdate();
+	        
+	        // get Testcase from context and delete
+	        if (!em.contains(testcase)) {
+	            testcase = em.merge(testcase);
+	        }
+	        em.remove(testcase);
+	        
+	        tx.commit();
+	    } catch (Exception e) {
+	        if (tx.isActive()) {
+	            tx.rollback();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        em.close();
+	    }
+	    loadTestcases();  // Refresh list of Testcases
+	    return "dashboard_TC?faces-redirect=true";
+	}
 
+	
+	
+	
+	
+	
+	//clear Testrun_id from Testcase
+	public String clearTestrun_id(Testcase testcase) {
+		EntityManager em = emf.createEntityManager();
+	    EntityTransaction tx = em.getTransaction();
+	    try {
+	    	tx.begin();
+	    		Testcase managedTestcase = em.merge(testcase);
+	    		managedTestcase.setTestrun_Id(null);
+	        tx.commit();
+	    } catch (Exception e) {
+	        if (tx.isActive()) {
+	            tx.rollback();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        em.close();
+	    }
+	    loadAvailabTestcases();
+	    loadFilteredTestcases();  // Refresh the list of testcases after deletion
+	    return "testrunOpen?faces-redirect=true";
+	}
 	// Getters and Setters
 	public Integer getTestcaseId() {
 		return testcaseId;

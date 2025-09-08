@@ -25,9 +25,6 @@ public class TestStep {
 	@Column
 	private String title;
 	
-	//@Column(name = "testcaseDescription")
-	//private String testcaseDescription;
-	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="testcase_id", insertable=false, updatable=false)
 	private Testcase testcase;

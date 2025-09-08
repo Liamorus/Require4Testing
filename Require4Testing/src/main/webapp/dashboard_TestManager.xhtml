@@ -17,12 +17,12 @@
 					var="testrun" border="1" style="margin-top: 10px;">
 					<h:column>
 						<f:facet name="header">Lauf Nummer</f:facet>
-                    #{testrun.runNr}
-                </h:column>
+                   		#{testrun.runNr}
+                	</h:column>
 					<h:column>
 						<f:facet name="header">Anforderung</f:facet>
-                    #{testrun.getRequirement().getDescription()}
-                </h:column>
+                   		#{testrun.getRequirement().getDescription()}
+                	</h:column>
 					<h:column>
 						<f:facet name="header"></f:facet>
 						<h:commandButton value="Zuweisen"
@@ -30,7 +30,6 @@
 					</h:column>
 				</h:dataTable>
 			</h:panelGroup>
-
 		</h:panelGrid>
 
 		<h:panelGrid columns="3" style="margin-top: 20px;">

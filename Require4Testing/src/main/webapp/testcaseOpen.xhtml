@@ -10,17 +10,17 @@
 <h:body>
   <h1>Testfall </h1>
   <h:form>
-  <h:outputText value="Tests" style="font-weight: bold;"/>
+	<h:outputText value="Tests" style="font-weight: bold;"/>
 	<h:outputText value="Testschritte" style="font-weight: bold;"/>  
 	<h:dataTable value="#{teststepController.filteredTestSteps}" var="stepData" border="1">
-    <h:column>
-        <f:facet name="header">Testfall</f:facet>
-        #{stepData.getTestcase().getDescription()}
-    </h:column>
-    <h:column>
-        <f:facet name="header">Testschritt</f:facet>
-        #{stepData.title}
-    </h:column>
+	    <h:column>
+	        <f:facet name="header">Testfall</f:facet>
+	        #{stepData.getTestcase().getDescription()}
+	    </h:column>
+	    <h:column>
+	        <f:facet name="header">Testschritt</f:facet>
+	        #{stepData.title}
+	    </h:column>
     </h:dataTable>
     <p:commandButton value="zurück" action="dashboard_Tester?faces-redirect=true" ajax="false" />
   </h:form>

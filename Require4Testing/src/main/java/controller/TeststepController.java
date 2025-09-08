@@ -40,7 +40,7 @@ public class TeststepController implements Serializable {
 	}
 
 	public boolean checkCreateCondition() {
-		// If one of the following cases appear create is diasbled
+		// If one of the following cases appear create is disabled
 		return (testcase_Id == null || title == null || title.trim().isEmpty());
 	}
 
@@ -62,7 +62,7 @@ public class TeststepController implements Serializable {
         } finally {
             em.close();
         }
-        // Reload list after insertion
+        // Reload list of Teststeps after insertion
         loadTestSteps();
         return "dashboard_Testfall?faces-redirect=true";
     }
